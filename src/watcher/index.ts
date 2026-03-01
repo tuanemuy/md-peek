@@ -12,7 +12,7 @@ export type FileWatcherHandle = {
 };
 
 export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
-  let watchers: FSWatcher[] = [];
+  const watchers: FSWatcher[] = [];
   const debounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
   let closed = false;
 
@@ -33,9 +33,13 @@ export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
     watchFile(filePath: string, callback: FileChangeCallback): void {
       if (closed) return;
       const watcher = watch(filePath, (eventType) => {
-        if (eventType === "change") {
-          debounced(filePath, () => callback(filePath));
+        debounced(filePath, () => callback(filePath));
+        if (eventType === "rename") {
+          watcher.close();
         }
+      });
+      watcher.on("error", () => {
+        watcher.close();
       });
       watchers.push(watcher);
     },
@@ -61,7 +65,7 @@ export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
       for (const watcher of watchers) {
         watcher.close();
       }
-      watchers = [];
+      watchers.length = 0;
       for (const timer of debounceTimers.values()) {
         clearTimeout(timer);
       }
