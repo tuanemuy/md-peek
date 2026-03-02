@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/tuanemuy/markdown-peek/compare/v1.3.0...v1.3.1) (2026-03-02)
+
+
+### Bug Fixes
+
+* make ExternalLink open standalone file view without sidebar layout ([d4a63df](https://github.com/tuanemuy/markdown-peek/commit/d4a63dfdf691f54697a18e9166e1d2c967054ff8))
+
 # [1.3.0](https://github.com/tuanemuy/markdown-peek/compare/v1.2.1...v1.3.0) (2026-03-02)
 
 
