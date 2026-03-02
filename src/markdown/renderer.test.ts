@@ -1,11 +1,22 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { initMarkdown, renderMarkdown } from "./renderer.js";
 
-beforeAll(async () => {
-  await initMarkdown();
+describe("initMarkdown guard", () => {
+  it("throws when renderMarkdown is called before initMarkdown", () => {
+    expect(() => renderMarkdown("# test")).toThrow(/not initialized/);
+  });
+
+  it("is idempotent — calling initMarkdown twice does not throw", async () => {
+    await expect(initMarkdown()).resolves.toBeUndefined();
+    await expect(initMarkdown()).resolves.toBeUndefined();
+  });
 });
 
 describe("renderMarkdown", () => {
+  beforeAll(async () => {
+    await initMarkdown();
+  });
+
   it("renders headings", () => {
     const html = renderMarkdown("# Hello World");
     expect(html).toContain("<h1>");
