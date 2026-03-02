@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/tuanemuy/markdown-peek/compare/v1.2.1...v1.3.0) (2026-03-02)
+
+
+### Features
+
+* replace hardcoded colors with CSS variables ([1f39999](https://github.com/tuanemuy/markdown-peek/commit/1f3999930425501c9fb35c2a5e31c6a8c80b9680))
+
 ## [1.2.1](https://github.com/tuanemuy/markdown-peek/compare/v1.2.0...v1.2.1) (2026-03-02)
 
 
