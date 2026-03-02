@@ -10,8 +10,6 @@ export type ResolvedStyles = {
   readonly contentCss: string;
 };
 
-export type StylesError = ReadTextFileError;
-
 function getXdgConfigPath(): string {
   const xdgConfigHome = process.env.XDG_CONFIG_HOME;
   if (xdgConfigHome) {
@@ -22,7 +20,7 @@ function getXdgConfigPath(): string {
 
 export async function resolveStyles(
   cssOption?: string,
-): Promise<Result<ResolvedStyles, StylesError>> {
+): Promise<Result<ResolvedStyles, ReadTextFileError>> {
   if (cssOption) {
     const cssPath = isAbsolute(cssOption)
       ? cssOption

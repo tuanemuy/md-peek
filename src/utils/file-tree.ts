@@ -91,22 +91,24 @@ export async function buildFileTree(
     return err(typedError("root-not-accessible", e));
   }
 
+  const defaultIg = ignore();
+  defaultIg.add(DEFAULT_IGNORE_PATTERNS);
+  const rules: IgnoreRule[] = [{ ig: defaultIg, baseDir: "" }];
+
+  const rootGitignore = await tryLoadGitignoreFromEntries(rootDir, rootEntries);
+  if (rootGitignore) {
+    rules.push({ ig: rootGitignore, baseDir: "" });
+  }
+
+  let rootReal: string;
   try {
-    const defaultIg = ignore();
-    defaultIg.add(DEFAULT_IGNORE_PATTERNS);
-    const rules: IgnoreRule[] = [{ ig: defaultIg, baseDir: "" }];
+    rootReal = await realpath(rootDir);
+  } catch (e) {
+    return err(typedError("root-not-accessible", e));
+  }
+  const visited = new Set<string>([rootReal]);
 
-    const rootGitignore = await tryLoadGitignoreFromEntries(
-      rootDir,
-      rootEntries,
-    );
-    if (rootGitignore) {
-      rules.push({ ig: rootGitignore, baseDir: "" });
-    }
-
-    const rootReal = await realpath(rootDir);
-    const visited = new Set<string>([rootReal]);
-
+  try {
     const nodes = await processEntries(
       rootEntries,
       rootDir,
@@ -138,7 +140,13 @@ async function scanDirectory(
   }
   visited.add(real);
 
-  const entries = await readdir(dir, { withFileTypes: true });
+  let entries: Dirent[];
+  try {
+    entries = await readdir(dir, { withFileTypes: true });
+  } catch (e) {
+    logger.warn(`Failed to read directory ${dir}:`, e);
+    return [];
+  }
 
   const localGitignore = await tryLoadGitignoreFromEntries(dir, entries);
   const rules = localGitignore

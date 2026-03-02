@@ -9,7 +9,6 @@ import {
   ok,
   type Result,
   safe,
-  safeSync,
 } from "./result.js";
 
 describe("ok / err", () => {
@@ -94,27 +93,6 @@ describe("getOr", () => {
   it("returns the default value for err result", () => {
     const result: Result<number, string> = err("fail");
     expect(getOr(result, 0)).toBe(0);
-  });
-});
-
-describe("safeSync", () => {
-  it("returns ok when the function succeeds", () => {
-    const result = safeSync(
-      () => JSON.parse('{"a":1}'),
-      (e) => String(e),
-    );
-    expect(result).toEqual(ok({ a: 1 }));
-  });
-
-  it("returns err when the function throws", () => {
-    const result = safeSync(
-      () => JSON.parse("invalid"),
-      (e) => (e instanceof Error ? e.message : "unknown"),
-    );
-    expect(result.ok).toBe(false);
-    if (!result.ok) {
-      expect(result.error).toMatch(/JSON/);
-    }
   });
 });
 

@@ -5,7 +5,7 @@ export function toError(value: unknown): Error {
 }
 
 export type TypedError<T extends string, P extends object = object> = Readonly<
-  { type: T; cause: Error } & P
+  { type: T; cause: Error } & Omit<P, "type" | "cause">
 >;
 
 export function typedError<T extends string>(
@@ -23,10 +23,4 @@ export function typedError(
   props?: object,
 ): TypedError<string> {
   return { ...props, type, cause: toError(cause) };
-}
-
-export type AnyError = TypedError<"any-error", { message: string }>;
-
-export function anyError(message: string, cause: unknown): AnyError {
-  return typedError("any-error", cause, { message });
 }

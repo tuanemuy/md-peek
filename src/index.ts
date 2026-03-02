@@ -9,10 +9,7 @@ import pc from "picocolors";
 import { resolveStyles } from "./config/styles.js";
 import { initMarkdown } from "./markdown/renderer.js";
 import { startServer } from "./server.js";
-import { anyError } from "./types/error.js";
-import { safe } from "./types/result.js";
 import { isNodeError } from "./utils/error.js";
-
 import { logger } from "./utils/logger.js";
 
 const require = createRequire(import.meta.url);
@@ -62,17 +59,13 @@ $ peek README.md --css ./custom.css --no-open`,
     const targetPath = targetArg || ".";
     const fullPath = resolve(targetPath);
 
-    const statResult = await safe(
-      () => stat(fullPath),
-      (e) => anyError("Failed to stat path", e),
-    );
-    if (!statResult.ok) {
-      logger.error("Failed to stat path:", statResult.error);
+    const pathStat = await stat(fullPath).catch((e: unknown) => {
+      logger.error("Failed to stat path:", e);
       cancel(`Path not found: ${fullPath}`);
-      process.exit(1);
-    }
+      return process.exit(1);
+    });
 
-    const mode = statResult.value.isDirectory() ? "directory" : "file";
+    const mode = pathStat.isDirectory() ? "directory" : "file";
 
     if (mode === "file" && !fullPath.endsWith(".md")) {
       cancel("Only Markdown files (.md) are supported");
@@ -92,16 +85,12 @@ $ peek README.md --css ./custom.css --no-open`,
     const s = spinner();
     s.start("Initializing...");
 
-    const initResult = await safe(
-      () => initMarkdown(),
-      (e) => anyError("Failed to initialize Markdown renderer", e),
-    );
-    if (!initResult.ok) {
-      logger.error("Failed to initialize Markdown renderer:", initResult.error);
+    await initMarkdown().catch((e: unknown) => {
+      logger.error("Failed to initialize Markdown renderer:", e);
       s.stop("Failed to initialize");
       cancel("Failed to initialize Markdown renderer");
-      process.exit(1);
-    }
+      return process.exit(1);
+    });
 
     const stylesResult = await resolveStyles(css);
     if (!stylesResult.ok) {
@@ -115,28 +104,21 @@ $ peek README.md --css ./custom.css --no-open`,
     }
     const styles = stylesResult.value;
 
-    const serverResult = await safe(
-      () =>
-        startServer({
-          targetPath: fullPath,
-          mode,
-          port,
-          hostname,
-          styles,
-        }),
-      (e) => anyError("Failed to start server", e),
-    );
-    if (!serverResult.ok) {
+    const server = await startServer({
+      targetPath: fullPath,
+      mode,
+      port,
+      hostname,
+      styles,
+    }).catch((e: unknown) => {
       s.stop("Failed to start server");
       const message =
-        isNodeError(serverResult.error.cause) &&
-        serverResult.error.cause.code === "EADDRINUSE"
+        isNodeError(e) && e.code === "EADDRINUSE"
           ? `Port ${port} is already in use`
           : "Failed to start server";
       cancel(message);
-      process.exit(1);
-    }
-    const server = serverResult.value;
+      return process.exit(1);
+    });
 
     s.stop("Server started");
 

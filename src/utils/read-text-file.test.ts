@@ -21,6 +21,8 @@ afterAll(() => {
   rmSync(testDir, { recursive: true, force: true });
 });
 
+const isRoot = process.getuid?.() === 0;
+
 describe("readTextFile", () => {
   it("returns ok with file content for a valid file", async () => {
     const result = await readTextFile(validFile);
@@ -35,7 +37,9 @@ describe("readTextFile", () => {
     expect(error.path).toBe(nonexistentFile);
     expect(error.cause).toBeInstanceOf(Error);
   });
+});
 
+describe.skipIf(isRoot)("readTextFile with unreadable file", () => {
   it("returns err with read-error and Error cause for permission denied", async () => {
     const result = await readTextFile(unreadableFile);
     const error = assertErr(result);

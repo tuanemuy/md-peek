@@ -42,17 +42,6 @@ export function getOr<T, E>(result: Result<T, E>, defaultValue: T): T {
   return result.ok ? result.value : defaultValue;
 }
 
-export function safeSync<T, E>(
-  fn: () => T,
-  onError: (error: unknown) => E,
-): Result<T, E> {
-  try {
-    return ok(fn());
-  } catch (e) {
-    return err(onError(e));
-  }
-}
-
 export async function safe<T, E>(
   fn: () => Promise<T>,
   onError: (error: unknown) => E,
