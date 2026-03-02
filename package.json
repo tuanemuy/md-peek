@@ -13,7 +13,9 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "postcss src/styles/global.css -o src/generated/global.css --watch & tsx --import ./src/loaders/css.mjs src/index.ts",
+    "dev:css": "postcss src/styles/global.css -o src/generated/global.css --watch",
+    "dev:server": "tsx --import ./src/loaders/css.mjs src/index.ts",
+    "dev": "pnpm run \"/^dev:.*/\"",
     "pretest": "postcss src/styles/global.css -o src/generated/global.css && node scripts/build-client.mjs",
     "build:css": "postcss src/styles/global.css -o src/generated/global.css --env production",
     "build:client": "node scripts/build-client.mjs",
