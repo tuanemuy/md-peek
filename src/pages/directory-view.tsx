@@ -32,7 +32,7 @@ export function DirectoryViewPage({
         id="header-bar"
         breadcrumbs={[{ label: dirTitle, href: "/" }, { label: fileTitle }]}
         showSidebarToggle
-        externalLinkHref={`/view?path=${encodeURIComponent(currentPath)}`}
+        externalLinkHref={`/${currentPath}`}
       />
 
       <MainContent class="px-5 sm:px-10 py-5 sm:py-10">
