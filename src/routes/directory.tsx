@@ -65,7 +65,7 @@ export function createDirectoryRoutes(
       return c.text("Internal server error", 500);
     }
 
-    const html = renderMarkdown(contentResult.value);
+    const html = await renderMarkdown(contentResult.value);
     const dirTitle = basename(dirPath) || dirPath;
     const fileTitle = basename(relativePath);
     return c.html(
@@ -99,7 +99,7 @@ export function createDirectoryRoutes(
       return c.text("Internal server error", 500);
     }
 
-    const html = renderMarkdown(result.value);
+    const html = await renderMarkdown(result.value);
     const fileTitle = basename(relativePath);
     return c.html(
       <FilePreviewPage title={fileTitle} htmlContent={html} styles={styles} />,

@@ -19,7 +19,7 @@ importers:
         version: 0.23.1(markdown-it@14.1.1)
       '@shikijs/markdown-it':
         specifier: ^4.0.1
-        version: 4.0.1
+        version: 4.0.1(markdown-it-async@2.2.0)
       gunshi:
         specifier: ^0.29.2
         version: 0.29.2
@@ -32,6 +32,9 @@ importers:
       markdown-it:
         specifier: ^14.1.1
         version: 14.1.1
+      markdown-it-async:
+        specifier: ^2.2.0
+        version: 2.2.0
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
@@ -1725,6 +1728,9 @@ packages:
     resolution: {integrity: sha512-ayF7iT+44LXdxJLTrTd3TLQpFDDvPCBxXxbv+pMUSuHA5Q8zyAfwkRP6aHHwNVFBUFWtxAHqwNJxF8vMZLAbVg==}
     engines: {node: '>=18'}
 
+  markdown-it-async@2.2.0:
+    resolution: {integrity: sha512-sITME+kf799vMeO/ww/CjH6q+c05f6TLpn6VOmmWCGNqPJzSh+uFgZoMB9s0plNtW6afy63qglNAC3MhrhP/gg==}
+
   markdown-it@14.1.1:
     resolution: {integrity: sha512-BuU2qnTti9YKgK5N+IeMubp14ZUKUUw7yeJbkjtosvHiP0AZ5c8IAgEMk79D0eC8F23r4Ac/q8cAIFdm2FtyoA==}
     hasBin: true
@@ -3239,10 +3245,12 @@ snapshots:
     dependencies:
       '@shikijs/types': 4.0.1
 
-  '@shikijs/markdown-it@4.0.1':
+  '@shikijs/markdown-it@4.0.1(markdown-it-async@2.2.0)':
     dependencies:
       markdown-it: 14.1.1
       shiki: 4.0.1
+    optionalDependencies:
+      markdown-it-async: 2.2.0
 
   '@shikijs/primitive@4.0.1':
     dependencies:
@@ -4159,6 +4167,11 @@ snapshots:
       p-event: 6.0.1
       type-fest: 4.41.0
       web-worker: 1.5.0
+
+  markdown-it-async@2.2.0:
+    dependencies:
+      '@types/markdown-it': 14.1.2
+      markdown-it: 14.1.1
 
   markdown-it@14.1.1:
     dependencies:
