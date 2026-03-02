@@ -4,14 +4,29 @@ export function toError(value: unknown): Error {
   return new Error(String(value));
 }
 
-export type AnyError = {
-  readonly type: "any-error";
-  readonly message: string;
-  readonly cause: Error;
-};
+export type TypedError<T extends string, P extends object = object> = Readonly<
+  { type: T; cause: Error } & P
+>;
 
-export function anyError(message: string, cause: Error): AnyError;
-export function anyError(message: string, cause: unknown): AnyError;
+export function typedError<T extends string>(
+  type: T,
+  cause: unknown,
+): TypedError<T>;
+export function typedError<T extends string, P extends object>(
+  type: T,
+  cause: unknown,
+  props: P,
+): TypedError<T, P>;
+export function typedError(
+  type: string,
+  cause: unknown,
+  props?: object,
+): TypedError<string> {
+  return { ...props, type, cause: toError(cause) };
+}
+
+export type AnyError = TypedError<"any-error", { message: string }>;
+
 export function anyError(message: string, cause: unknown): AnyError {
-  return { type: "any-error", message, cause: toError(cause) };
+  return typedError("any-error", cause, { message });
 }

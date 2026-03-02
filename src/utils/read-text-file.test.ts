@@ -33,6 +33,7 @@ describe("readTextFile", () => {
     const error = assertErr(result);
     expect(error.type).toBe("file-not-found");
     expect(error.path).toBe(nonexistentFile);
+    expect(error.cause).toBeInstanceOf(Error);
   });
 
   it("returns err with read-error and Error cause for permission denied", async () => {
@@ -40,8 +41,6 @@ describe("readTextFile", () => {
     const error = assertErr(result);
     expect(error.type).toBe("read-error");
     expect(error.path).toBe(unreadableFile);
-    if (error.type === "read-error") {
-      expect(error.cause).toBeInstanceOf(Error);
-    }
+    expect(error.cause).toBeInstanceOf(Error);
   });
 });

@@ -50,10 +50,10 @@ export function createApiRoutes(config: ApiConfig): Hono {
 
     const result = await readTextFile(fullPath);
     if (!result.ok) {
-      logger.error("Failed to read file:", result.error);
       if (result.error.type === "file-not-found") {
         return c.text("File not found", 404);
       }
+      logger.error("Failed to read file:", result.error);
       return c.text("Failed to read file", 500);
     }
     return c.html(renderMarkdown(result.value));

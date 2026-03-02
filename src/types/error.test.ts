@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type AnyError, anyError, toError } from "./error.js";
+import { type AnyError, anyError, toError, typedError } from "./error.js";
 
 describe("toError", () => {
   it("returns the same Error instance when given an Error", () => {
@@ -36,6 +36,28 @@ describe("toError", () => {
     const result = toError(undefined);
     expect(result).toBeInstanceOf(Error);
     expect(result.message).toBe("undefined");
+  });
+});
+
+describe("typedError", () => {
+  it("creates a typed error with cause converted via toError", () => {
+    const result = typedError("my-error", "string cause");
+    expect(result.type).toBe("my-error");
+    expect(result.cause).toBeInstanceOf(Error);
+    expect(result.cause.message).toBe("string cause");
+  });
+
+  it("preserves an Error cause as-is", () => {
+    const cause = new Error("original");
+    const result = typedError("my-error", cause);
+    expect(result.cause).toBe(cause);
+  });
+
+  it("includes extra props when provided", () => {
+    const result = typedError("file-error", "boom", { path: "/tmp/x" });
+    expect(result.type).toBe("file-error");
+    expect(result.path).toBe("/tmp/x");
+    expect(result.cause).toBeInstanceOf(Error);
   });
 });
 

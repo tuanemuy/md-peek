@@ -2,7 +2,7 @@ import type { Dirent } from "node:fs";
 import { readdir, realpath } from "node:fs/promises";
 import { join, relative } from "node:path";
 import ignore, { type Ignore } from "ignore";
-import { toError } from "../types/error.js";
+import { type TypedError, typedError } from "../types/error.js";
 import type { Result } from "../types/result.js";
 import { err, ok } from "../types/result.js";
 import { logger } from "./logger.js";
@@ -77,16 +77,8 @@ function isPathIgnored(
   return false;
 }
 
-export type RootNotAccessibleError = {
-  readonly type: "root-not-accessible";
-  readonly cause: Error;
-};
-
-export type TreeTraversalError = {
-  readonly type: "tree-traversal-error";
-  readonly cause: Error;
-};
-
+export type RootNotAccessibleError = TypedError<"root-not-accessible">;
+export type TreeTraversalError = TypedError<"tree-traversal-error">;
 export type BuildTreeError = RootNotAccessibleError | TreeTraversalError;
 
 export async function buildFileTree(
@@ -96,7 +88,7 @@ export async function buildFileTree(
   try {
     rootEntries = await readdir(rootDir, { withFileTypes: true });
   } catch (e) {
-    return err({ type: "root-not-accessible" as const, cause: toError(e) });
+    return err(typedError("root-not-accessible", e));
   }
 
   try {
@@ -124,7 +116,7 @@ export async function buildFileTree(
     );
     return ok(nodes);
   } catch (e) {
-    return err({ type: "tree-traversal-error" as const, cause: toError(e) });
+    return err(typedError("tree-traversal-error", e));
   }
 }
 
