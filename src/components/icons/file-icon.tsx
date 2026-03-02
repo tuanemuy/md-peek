@@ -1,9 +1,9 @@
 import type { IconProps } from "./svg-base.js";
 import { SvgBase } from "./svg-base.js";
 
-export function FileIcon({ class: className }: IconProps) {
+export function FileIcon(props: IconProps) {
   return (
-    <SvgBase class={className}>
+    <SvgBase {...props}>
       <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
       <path d="M14 2v4a2 2 0 0 0 2 2h4" />
     </SvgBase>

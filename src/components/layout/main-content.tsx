@@ -7,7 +7,7 @@ type MainContentProps = {
 
 export function MainContent({ class: className, children }: MainContentProps) {
   return (
-    <main id="main-content" class={className}>
+    <main id="main-content" class={className ?? ""}>
       {children}
     </main>
   );

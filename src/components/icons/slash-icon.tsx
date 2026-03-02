@@ -1,15 +1,10 @@
-export function SlashIcon({ class: className }: { readonly class?: string }) {
+import type { IconProps } from "./svg-base.js";
+import { SvgBase } from "./svg-base.js";
+
+export function SlashIcon(props: IconProps) {
   return (
-    <svg
-      class={className}
-      aria-hidden="true"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M6 13L10 3" stroke="currentColor" stroke-linecap="round" />
-    </svg>
+    <SvgBase {...props} width="16" height="16" viewBox="0 0 16 16">
+      <path d="M6 13L10 3" stroke-linecap="round" />
+    </SvgBase>
   );
 }

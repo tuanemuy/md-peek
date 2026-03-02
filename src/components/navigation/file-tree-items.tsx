@@ -1,6 +1,8 @@
 import type { FileTreeNode } from "../../utils/file-tree.js";
 import { ChevronDownIcon, FileIcon, FolderIcon } from "../icons/index.js";
 
+const MAX_DEPTH = 20;
+
 type FileTreeItemsProps = {
   readonly nodes: readonly FileTreeNode[];
   readonly currentPath?: string;
@@ -17,7 +19,7 @@ export function FileTreeItems({
       {nodes.map((node) => {
         if (node.type === "directory") {
           return (
-            <li class={depth === 0 ? "px-2 lg:px-5" : ""}>
+            <li key={node.path} class={depth === 0 ? "px-2 lg:px-5" : ""}>
               <button
                 type="button"
                 data-tree-toggle
@@ -34,7 +36,7 @@ export function FileTreeItems({
                 data-tree-content
                 class="ps-7 mt-1 flex flex-col gap-y-1 relative before:absolute before:top-0 before:start-[1.125rem] before:w-px before:h-full before:bg-sidebar-border"
               >
-                {node.children ? (
+                {node.children && depth < MAX_DEPTH ? (
                   <FileTreeItems
                     nodes={node.children}
                     currentPath={currentPath}
@@ -48,7 +50,7 @@ export function FileTreeItems({
 
         const isActive = currentPath === node.path;
         return (
-          <li class={depth === 0 ? "px-2 lg:px-5" : ""}>
+          <li key={node.path} class={depth === 0 ? "px-2 lg:px-5" : ""}>
             <a
               href={`/view?path=${encodeURIComponent(node.path)}`}
               class={`flex items-center gap-x-3 py-2 px-3 text-sm rounded-lg overflow-hidden ${
