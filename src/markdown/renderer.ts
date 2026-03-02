@@ -14,8 +14,8 @@ export function initMarkdown(): Promise<void> {
       instance.use(
         fromAsyncCodeToHtml(codeToHtml, {
           themes: {
-            light: "gruvbox-light-hard",
-            dark: "gruvbox-dark-hard",
+            light: "vitesse-light",
+            dark: "vitesse-dark",
           },
           defaultColor: false,
         }),
