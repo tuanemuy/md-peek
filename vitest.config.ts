@@ -32,5 +32,7 @@ export default defineConfig({
   ],
   test: {
     exclude: ["**/node_modules/**", "**/.direnv/**"],
+    testTimeout: 30000,
+    hookTimeout: 30000,
   },
 });

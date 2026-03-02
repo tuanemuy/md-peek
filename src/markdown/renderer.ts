@@ -1,21 +1,40 @@
-import { init, mdToHtml } from "md4w";
+import { tasklist } from "@mdit/plugin-tasklist";
+import { fromAsyncCodeToHtml } from "@shikijs/markdown-it/async";
+import createMarkdownItAsync, { type MarkdownItAsync } from "markdown-it-async";
+import { codeToHtml } from "shiki";
 
-let initialized = false;
+let md: MarkdownItAsync | null = null;
+let initPromise: Promise<void> | null = null;
 
-export async function initMarkdown(): Promise<void> {
-  if (initialized) return;
-  await init();
-  initialized = true;
+export function initMarkdown(): Promise<void> {
+  if (!initPromise) {
+    initPromise = (async () => {
+      const instance = createMarkdownItAsync();
+      instance.use(tasklist);
+      instance.use(
+        fromAsyncCodeToHtml(codeToHtml, {
+          themes: {
+            light: "gruvbox-light-hard",
+            dark: "gruvbox-dark-hard",
+          },
+          defaultColor: false,
+        }),
+      );
+      md = instance;
+    })().catch((e: unknown) => {
+      initPromise = null;
+      throw e;
+    });
+  }
+  return initPromise;
 }
 
-export function renderMarkdown(content: string): string {
-  if (!initialized) {
+export async function renderMarkdown(content: string): Promise<string> {
+  if (!md) {
     throw new Error(
       "Markdown renderer not initialized. Call initMarkdown() first.",
     );
   }
   if (content === "") return "";
-  return mdToHtml(content, {
-    parseFlags: ["DEFAULT", "LATEX_MATH_SPANS"],
-  });
+  return md.renderAsync(content);
 }

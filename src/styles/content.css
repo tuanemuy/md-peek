@@ -116,6 +116,18 @@
     }
   }
 
+  pre.shiki {
+    font-family:
+      ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+      "Liberation Mono", monospace;
+  }
+
+  .shiki,
+  .shiki span {
+    color: var(--shiki-light);
+    background-color: var(--shiki-light-bg);
+  }
+
   table {
     border-spacing: 0;
     border-collapse: collapse;
@@ -204,9 +216,15 @@
     background-color: rgba(110, 118, 129, 0.4);
   }
 
-  pre {
+  pre:not(.shiki) {
     color: #e6edf3;
     background-color: #161b22;
+  }
+
+  .shiki,
+  .shiki span {
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
   }
 
   table {

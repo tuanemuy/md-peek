@@ -31,7 +31,7 @@ export function createApiRoutes(config: ApiConfig): Hono {
         logger.error("Failed to read file:", result.error);
         return c.text("Failed to read file", 500);
       }
-      return c.html(renderMarkdown(result.value));
+      return c.html(await renderMarkdown(result.value));
     }
 
     const relativePath = c.req.query("path");
@@ -56,7 +56,7 @@ export function createApiRoutes(config: ApiConfig): Hono {
       logger.error("Failed to read file:", result.error);
       return c.text("Failed to read file", 500);
     }
-    return c.html(renderMarkdown(result.value));
+    return c.html(await renderMarkdown(result.value));
   });
 
   app.get("/api/tree", async (c) => {
