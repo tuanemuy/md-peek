@@ -1,3 +1,16 @@
+## [1.2.1](https://github.com/tuanemuy/markdown-peek/compare/v1.2.0...v1.2.1) (2026-03-02)
+
+
+### Bug Fixes
+
+* fix test and lint issues from dependency upgrades ([4f27439](https://github.com/tuanemuy/markdown-peek/commit/4f27439213f69c56526d99918040854c03c031ad))
+* remove unintended content.css changes from PR ([cd87f9d](https://github.com/tuanemuy/markdown-peek/commit/cd87f9d6b750bd9a0a089e458dadf664723361c6))
+
+
+### Reverts
+
+* restore duplicate background-color in content.css ([94f416a](https://github.com/tuanemuy/markdown-peek/commit/94f416abc7ac51ebc665b130991d90ae3fdd2357))
+
 # [1.2.0](https://github.com/tuanemuy/markdown-peek/compare/v1.1.2...v1.2.0) (2026-03-02)
 
 
