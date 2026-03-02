@@ -1,6 +1,7 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { assertErr } from "../test-utils/assert-result.js";
 import { createFileTreeCache } from "./file-tree-cache.js";
 
 const testDir = join(import.meta.dirname, "__test_cache_fixture__");
@@ -58,7 +59,8 @@ describe("createFileTreeCache", () => {
   it("returns err result for nonexistent path", async () => {
     const cache = createFileTreeCache("/nonexistent/path");
     const result = await cache.get();
-    expect(result.ok).toBe(false);
+    const error = assertErr(result);
+    expect(error.type).toBe("root-not-accessible");
   });
 
   it("retries after a previous failure instead of caching error", async () => {

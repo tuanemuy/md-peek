@@ -9,7 +9,7 @@ import pc from "picocolors";
 import { resolveStyles } from "./config/styles.js";
 import { initMarkdown } from "./markdown/renderer.js";
 import { startServer } from "./server.js";
-import { anyError, toError } from "./types/error.js";
+import { anyError } from "./types/error.js";
 import { safe } from "./types/result.js";
 import { isNodeError } from "./utils/error.js";
 
@@ -64,7 +64,7 @@ $ peek README.md --css ./custom.css --no-open`,
 
     const statResult = await safe(
       () => stat(fullPath),
-      (e) => anyError("Failed to stat path", toError(e)),
+      (e) => anyError("Failed to stat path", e),
     );
     if (!statResult.ok) {
       logger.error("Failed to stat path:", statResult.error);
@@ -94,7 +94,7 @@ $ peek README.md --css ./custom.css --no-open`,
 
     const initResult = await safe(
       () => initMarkdown(),
-      (e) => anyError("Failed to initialize Markdown renderer", toError(e)),
+      (e) => anyError("Failed to initialize Markdown renderer", e),
     );
     if (!initResult.ok) {
       logger.error("Failed to initialize Markdown renderer:", initResult.error);
@@ -124,7 +124,7 @@ $ peek README.md --css ./custom.css --no-open`,
           hostname,
           styles,
         }),
-      (e) => anyError("Failed to start server", toError(e)),
+      (e) => anyError("Failed to start server", e),
     );
     if (!serverResult.ok) {
       s.stop("Failed to start server");

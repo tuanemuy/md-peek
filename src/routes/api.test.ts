@@ -152,7 +152,7 @@ describe("api routes - tree error handling", () => {
     get: () =>
       Promise.resolve(
         err({
-          type: "build-tree-error" as const,
+          type: "root-not-accessible" as const,
           cause: new Error("disk failure"),
         }),
       ),

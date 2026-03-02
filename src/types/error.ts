@@ -10,6 +10,8 @@ export type AnyError = {
   readonly cause: Error;
 };
 
-export function anyError(message: string, cause: Error): AnyError {
-  return { type: "any-error", message, cause };
+export function anyError(message: string, cause: Error): AnyError;
+export function anyError(message: string, cause: unknown): AnyError;
+export function anyError(message: string, cause: unknown): AnyError {
+  return { type: "any-error", message, cause: toError(cause) };
 }

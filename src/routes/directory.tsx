@@ -10,7 +10,7 @@ import {
 import type { FileTreeCache } from "../utils/file-tree-cache.js";
 import { logger } from "../utils/logger.js";
 import { isWithinBase } from "../utils/path.js";
-import { readMarkdownFile } from "../utils/read-markdown.js";
+import { readTextFile } from "../utils/read-text-file.js";
 
 export function createDirectoryRoutes(
   dirPath: string,
@@ -50,7 +50,7 @@ export function createDirectoryRoutes(
       return c.text("Not found", 404);
     }
 
-    const contentResult = await readMarkdownFile(fullPath);
+    const contentResult = await readTextFile(fullPath);
     if (!contentResult.ok) {
       if (contentResult.error.type === "file-not-found") {
         return c.text("File not found", 404);
@@ -90,7 +90,7 @@ export function createDirectoryRoutes(
       return c.text("Not found", 404);
     }
 
-    const result = await readMarkdownFile(fullPath);
+    const result = await readTextFile(fullPath);
     if (!result.ok) {
       if (result.error.type === "file-not-found") {
         return c.text("File not found", 404);

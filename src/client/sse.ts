@@ -14,7 +14,7 @@ function normalizePath(p: string): string {
 function parseFileChangedData(raw: string): { path: string } | null {
   let data: unknown;
   try {
-    data = JSON.parse(raw) as unknown;
+    data = JSON.parse(raw);
   } catch {
     return null;
   }

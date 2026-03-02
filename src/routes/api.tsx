@@ -6,7 +6,7 @@ import { renderMarkdown } from "../markdown/renderer.js";
 import type { FileTreeCache } from "../utils/file-tree-cache.js";
 import { logger } from "../utils/logger.js";
 import { isWithinBase } from "../utils/path.js";
-import { readMarkdownFile } from "../utils/read-markdown.js";
+import { readTextFile } from "../utils/read-text-file.js";
 
 type FileApiConfig = {
   readonly mode: "file";
@@ -26,7 +26,7 @@ export function createApiRoutes(config: ApiConfig): Hono {
 
   app.get("/api/content", async (c) => {
     if (config.mode === "file") {
-      const result = await readMarkdownFile(config.targetPath);
+      const result = await readTextFile(config.targetPath);
       if (!result.ok) {
         logger.error("Failed to read file:", result.error);
         return c.text("Failed to read file", 500);
@@ -48,7 +48,7 @@ export function createApiRoutes(config: ApiConfig): Hono {
       return c.text("Not found", 404);
     }
 
-    const result = await readMarkdownFile(fullPath);
+    const result = await readTextFile(fullPath);
     if (!result.ok) {
       logger.error("Failed to read file:", result.error);
       if (result.error.type === "file-not-found") {

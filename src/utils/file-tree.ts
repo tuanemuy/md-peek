@@ -1,12 +1,12 @@
 import type { Dirent } from "node:fs";
-import { readdir, readFile, realpath } from "node:fs/promises";
+import { readdir, realpath } from "node:fs/promises";
 import { join, relative } from "node:path";
 import ignore, { type Ignore } from "ignore";
 import { toError } from "../types/error.js";
 import type { Result } from "../types/result.js";
 import { err, ok } from "../types/result.js";
-import { isNodeError } from "./error.js";
 import { logger } from "./logger.js";
+import { readTextFile } from "./read-text-file.js";
 
 export type FileTreeNode = {
   readonly name: string;
@@ -32,17 +32,16 @@ type IgnoreRule = {
 };
 
 async function readGitignore(path: string): Promise<Ignore | null> {
-  try {
-    const content = await readFile(path, "utf-8");
+  const result = await readTextFile(path);
+  if (result.ok) {
     const ig = ignore();
-    ig.add(content);
+    ig.add(result.value);
     return ig;
-  } catch (e) {
-    if (!(isNodeError(e) && e.code === "ENOENT")) {
-      logger.warn(`Failed to read .gitignore at ${path}:`, e);
-    }
-    return null;
   }
+  if (result.error.type !== "file-not-found") {
+    logger.warn(`Failed to read .gitignore at ${path}:`, result.error);
+  }
+  return null;
 }
 
 function tryLoadGitignoreFromEntries(
@@ -78,20 +77,32 @@ function isPathIgnored(
   return false;
 }
 
-export type BuildTreeError = {
-  readonly type: "build-tree-error";
+export type RootNotAccessibleError = {
+  readonly type: "root-not-accessible";
   readonly cause: Error;
 };
+
+export type TreeTraversalError = {
+  readonly type: "tree-traversal-error";
+  readonly cause: Error;
+};
+
+export type BuildTreeError = RootNotAccessibleError | TreeTraversalError;
 
 export async function buildFileTree(
   rootDir: string,
 ): Promise<Result<readonly FileTreeNode[], BuildTreeError>> {
+  let rootEntries: Dirent[];
+  try {
+    rootEntries = await readdir(rootDir, { withFileTypes: true });
+  } catch (e) {
+    return err({ type: "root-not-accessible" as const, cause: toError(e) });
+  }
+
   try {
     const defaultIg = ignore();
     defaultIg.add(DEFAULT_IGNORE_PATTERNS);
     const rules: IgnoreRule[] = [{ ig: defaultIg, baseDir: "" }];
-
-    const rootEntries = await readdir(rootDir, { withFileTypes: true });
 
     const rootGitignore = await tryLoadGitignoreFromEntries(
       rootDir,
@@ -113,7 +124,7 @@ export async function buildFileTree(
     );
     return ok(nodes);
   } catch (e) {
-    return err({ type: "build-tree-error" as const, cause: toError(e) });
+    return err({ type: "tree-traversal-error" as const, cause: toError(e) });
   }
 }
 

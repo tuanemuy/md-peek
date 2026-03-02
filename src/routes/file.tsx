@@ -4,7 +4,7 @@ import type { ResolvedStyles } from "../config/styles.js";
 import { renderMarkdown } from "../markdown/renderer.js";
 import { FilePreviewPage } from "../pages/index.js";
 import { logger } from "../utils/logger.js";
-import { readMarkdownFile } from "../utils/read-markdown.js";
+import { readTextFile } from "../utils/read-text-file.js";
 
 export function createFileRoutes(
   filePath: string,
@@ -13,7 +13,7 @@ export function createFileRoutes(
   const app = new Hono();
 
   app.get("/", async (c) => {
-    const result = await readMarkdownFile(filePath);
+    const result = await readTextFile(filePath);
     if (!result.ok) {
       logger.error("Failed to read file:", result.error);
       return c.text("Failed to read file", 500);

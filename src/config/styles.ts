@@ -1,28 +1,16 @@
-import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { isAbsolute, resolve } from "node:path";
 import contentCssDefault from "../styles/content.css";
-import { toError } from "../types/error.js";
 import type { Result } from "../types/result.js";
-import { map, ok, safe } from "../types/result.js";
-import { isNodeError } from "../utils/error.js";
+import { map, ok } from "../types/result.js";
+import type { ReadTextFileError } from "../utils/read-text-file.js";
+import { readTextFile } from "../utils/read-text-file.js";
 
 export type ResolvedStyles = {
   readonly contentCss: string;
 };
 
-type FileNotFoundError = {
-  readonly type: "file-not-found";
-  readonly path: string;
-};
-
-type ReadError = {
-  readonly type: "read-error";
-  readonly path: string;
-  readonly cause: Error;
-};
-
-export type StylesError = FileNotFoundError | ReadError;
+export type StylesError = ReadTextFileError;
 
 function getXdgConfigPath(): string {
   const xdgConfigHome = process.env.XDG_CONFIG_HOME;
@@ -32,18 +20,6 @@ function getXdgConfigPath(): string {
   return resolve(homedir(), ".config", "peek", "style.css");
 }
 
-async function tryReadCss(
-  cssPath: string,
-): Promise<Result<string, StylesError>> {
-  return safe(
-    () => readFile(cssPath, "utf-8"),
-    (e): StylesError =>
-      isNodeError(e) && e.code === "ENOENT"
-        ? { type: "file-not-found", path: cssPath }
-        : { type: "read-error", path: cssPath, cause: toError(e) },
-  );
-}
-
 export async function resolveStyles(
   cssOption?: string,
 ): Promise<Result<ResolvedStyles, StylesError>> {
@@ -51,12 +27,12 @@ export async function resolveStyles(
     const cssPath = isAbsolute(cssOption)
       ? cssOption
       : resolve(process.cwd(), cssOption);
-    const result = await tryReadCss(cssPath);
+    const result = await readTextFile(cssPath);
     return map(result, (contentCss) => ({ contentCss }));
   }
 
   const xdgPath = getXdgConfigPath();
-  const xdgResult = await tryReadCss(xdgPath);
+  const xdgResult = await readTextFile(xdgPath);
   if (xdgResult.ok) {
     return ok({ contentCss: xdgResult.value });
   }

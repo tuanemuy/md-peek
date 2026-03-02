@@ -57,4 +57,16 @@ describe("anyError", () => {
     const result = anyError("context", cause);
     expect(result.cause).toBe(cause);
   });
+
+  it("converts an unknown cause to an Error via toError", () => {
+    const result = anyError("context", "string cause");
+    expect(result.cause).toBeInstanceOf(Error);
+    expect(result.cause.message).toBe("string cause");
+  });
+
+  it("converts a non-Error object cause to an Error", () => {
+    const result = anyError("context", 42);
+    expect(result.cause).toBeInstanceOf(Error);
+    expect(result.cause.message).toBe("42");
+  });
 });
