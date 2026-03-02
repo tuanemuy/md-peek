@@ -29,7 +29,10 @@ afterAll(() => {
 
 describe("buildFileTree", () => {
   it("builds a tree with directories and files", async () => {
-    const tree = await buildFileTree(testDir);
+    const result = await buildFileTree(testDir);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const tree = result.value;
     expect(tree.length).toBeGreaterThan(0);
 
     const dirs = tree.filter((n) => n.type === "directory");
@@ -41,16 +44,20 @@ describe("buildFileTree", () => {
   });
 
   it("excludes .git and node_modules", async () => {
-    const tree = await buildFileTree(testDir);
-    const allNames = flattenNames(tree);
+    const result = await buildFileTree(testDir);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const allNames = flattenNames(result.value);
 
     expect(allNames).not.toContain(".git");
     expect(allNames).not.toContain("node_modules");
   });
 
   it("only includes .md files", async () => {
-    const tree = await buildFileTree(testDir);
-    const allFiles = flattenFiles(tree);
+    const result = await buildFileTree(testDir);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const allFiles = flattenFiles(result.value);
 
     for (const f of allFiles) {
       expect(f.name).toMatch(/\.md$/);
@@ -59,8 +66,10 @@ describe("buildFileTree", () => {
   });
 
   it("sorts directories before files, alphabetically", async () => {
-    const tree = await buildFileTree(testDir);
-    const types = tree.map((n) => n.type);
+    const result = await buildFileTree(testDir);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const types = result.value.map((n) => n.type);
     const lastDirIndex = types.lastIndexOf("directory");
     const firstFileIndex = types.indexOf("file");
 
@@ -70,19 +79,26 @@ describe("buildFileTree", () => {
   });
 
   it("excludes dotfiles", async () => {
-    const tree = await buildFileTree(testDir);
-    const allNames = flattenNames(tree);
+    const result = await buildFileTree(testDir);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const allNames = flattenNames(result.value);
     expect(allNames).not.toContain(".hidden.md");
   });
 
   it("excludes empty directories", async () => {
-    const tree = await buildFileTree(testDir);
-    const allNames = flattenNames(tree);
+    const result = await buildFileTree(testDir);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const allNames = flattenNames(result.value);
     expect(allNames).not.toContain("empty-dir");
   });
 
   it("uses relative paths", async () => {
-    const tree = await buildFileTree(testDir);
+    const result = await buildFileTree(testDir);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const tree = result.value;
     const docsDir = tree.find((n) => n.name === "docs");
     expect(docsDir?.path).toBe("docs");
 
@@ -115,16 +131,20 @@ describe("buildFileTree with .gitignore", () => {
   });
 
   it("excludes directories listed in .gitignore", async () => {
-    const tree = await buildFileTree(gitignoreDir);
-    const allNames = flattenNames(tree);
+    const result = await buildFileTree(gitignoreDir);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const allNames = flattenNames(result.value);
 
     expect(allNames).not.toContain("vendor");
     expect(allNames).not.toContain("output");
   });
 
   it("includes directories not listed in .gitignore", async () => {
-    const tree = await buildFileTree(gitignoreDir);
-    const allNames = flattenNames(tree);
+    const result = await buildFileTree(gitignoreDir);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const allNames = flattenNames(result.value);
 
     expect(allNames).toContain("docs");
     expect(allNames).toContain("README.md");
@@ -163,8 +183,10 @@ describe("buildFileTree with nested .gitignore", () => {
   });
 
   it("excludes directories listed in nested .gitignore", async () => {
-    const tree = await buildFileTree(nestedDir);
-    const allNames = flattenNames(tree);
+    const result = await buildFileTree(nestedDir);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const allNames = flattenNames(result.value);
 
     expect(allNames).not.toContain("drafts");
     expect(allNames).not.toContain("wip.md");
@@ -173,8 +195,10 @@ describe("buildFileTree with nested .gitignore", () => {
   });
 
   it("includes directories not listed in nested .gitignore", async () => {
-    const tree = await buildFileTree(nestedDir);
-    const allNames = flattenNames(tree);
+    const result = await buildFileTree(nestedDir);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const allNames = flattenNames(result.value);
 
     expect(allNames).toContain("docs");
     expect(allNames).toContain("guide.md");
@@ -186,8 +210,10 @@ describe("buildFileTree with nested .gitignore", () => {
   });
 
   it("nested .gitignore does not affect sibling directories", async () => {
-    const tree = await buildFileTree(nestedDir);
-    const allNames = flattenNames(tree);
+    const result = await buildFileTree(nestedDir);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const allNames = flattenNames(result.value);
 
     // docs/.gitignore has "drafts/" but src/public should not be affected
     expect(allNames).toContain("public");
@@ -215,9 +241,11 @@ describe.skipIf(isRoot)("buildFileTree with unreadable .gitignore", () => {
 
   it("continues building the tree when .gitignore is unreadable", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const tree = await buildFileTree(permDir);
-    expect(tree.length).toBeGreaterThan(0);
-    expect(tree.some((n) => n.name === "README.md")).toBe(true);
+    const result = await buildFileTree(permDir);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.length).toBeGreaterThan(0);
+    expect(result.value.some((n) => n.name === "README.md")).toBe(true);
     expect(warnSpy).toHaveBeenCalledWith(
       "[peek]",
       expect.stringContaining("Failed to read .gitignore"),

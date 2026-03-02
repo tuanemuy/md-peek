@@ -77,6 +77,7 @@ export function createSseManager(): SseManager {
         try {
           await sleep(KEEP_ALIVE_INTERVAL_MS, abortController.signal);
         } catch {
+          // AbortSignal interrupts sleep when the connection is closed — expected
           break;
         }
         if (!closed) {

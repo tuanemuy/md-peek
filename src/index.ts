@@ -1,5 +1,4 @@
 import { execFile } from "node:child_process";
-import type { Stats } from "node:fs";
 import { stat } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { platform } from "node:os";
@@ -9,8 +8,9 @@ import { cli, define } from "gunshi";
 import pc from "picocolors";
 import { resolveStyles } from "./config/styles.js";
 import { initMarkdown } from "./markdown/renderer.js";
-import type { ServerInstance } from "./server.js";
 import { startServer } from "./server.js";
+import { safe } from "./types/result.js";
+import { isNodeError } from "./utils/error.js";
 
 import { logger } from "./utils/logger.js";
 
@@ -61,15 +61,17 @@ $ peek README.md --css ./custom.css --no-open`,
     const targetPath = targetArg || ".";
     const fullPath = resolve(targetPath);
 
-    let pathStat: Stats | undefined;
-    try {
-      pathStat = await stat(fullPath);
-    } catch {
+    const statResult = await safe(
+      () => stat(fullPath),
+      (e) => e,
+    );
+    if (!statResult.ok) {
+      logger.error("Failed to stat path:", statResult.error);
       cancel(`Path not found: ${fullPath}`);
       process.exit(1);
     }
 
-    const mode = pathStat.isDirectory() ? "directory" : "file";
+    const mode = statResult.value.isDirectory() ? "directory" : "file";
 
     if (mode === "file" && !fullPath.endsWith(".md")) {
       cancel("Only Markdown files (.md) are supported");
@@ -89,9 +91,12 @@ $ peek README.md --css ./custom.css --no-open`,
     const s = spinner();
     s.start("Initializing...");
 
-    try {
-      await initMarkdown();
-    } catch {
+    const initResult = await safe(
+      () => initMarkdown(),
+      (e) => e,
+    );
+    if (!initResult.ok) {
+      logger.error("Failed to initialize Markdown renderer:", initResult.error);
       s.stop("Failed to initialize");
       cancel("Failed to initialize Markdown renderer");
       process.exit(1);
@@ -109,24 +114,28 @@ $ peek README.md --css ./custom.css --no-open`,
     }
     const styles = stylesResult.value;
 
-    let server: ServerInstance;
-    try {
-      server = await startServer({
-        targetPath: fullPath,
-        mode,
-        port,
-        hostname,
-        styles,
-      });
-    } catch (e) {
+    const serverResult = await safe(
+      () =>
+        startServer({
+          targetPath: fullPath,
+          mode,
+          port,
+          hostname,
+          styles,
+        }),
+      (e) => e,
+    );
+    if (!serverResult.ok) {
       s.stop("Failed to start server");
       const message =
-        e instanceof Error && "code" in e && e.code === "EADDRINUSE"
+        isNodeError(serverResult.error) &&
+        serverResult.error.code === "EADDRINUSE"
           ? `Port ${port} is already in use`
           : "Failed to start server";
       cancel(message);
       process.exit(1);
     }
+    const server = serverResult.value;
 
     s.stop("Server started");
 

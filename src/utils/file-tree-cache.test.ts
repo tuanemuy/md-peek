@@ -55,15 +55,17 @@ describe("createFileTreeCache", () => {
     expect(first).not.toBe(second);
   });
 
-  it("propagates buildFileTree errors", async () => {
+  it("returns err result for nonexistent path", async () => {
     const cache = createFileTreeCache("/nonexistent/path");
-    await expect(cache.get()).rejects.toThrow();
+    const result = await cache.get();
+    expect(result.ok).toBe(false);
   });
 
   it("allows get() again after a previous failure", async () => {
     const cache = createFileTreeCache("/nonexistent/path");
-    await expect(cache.get()).rejects.toThrow();
-    // pending should be cleared after failure, so a second call retries
-    await expect(cache.get()).rejects.toThrow();
+    const first = await cache.get();
+    expect(first.ok).toBe(false);
+    const second = await cache.get();
+    expect(second.ok).toBe(false);
   });
 });

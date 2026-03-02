@@ -2,7 +2,8 @@ import type { Dirent } from "node:fs";
 import { readdir, readFile, realpath } from "node:fs/promises";
 import { join, relative } from "node:path";
 import ignore, { type Ignore } from "ignore";
-import { tryCatch } from "../types/result.js";
+import type { Result } from "../types/result.js";
+import { err, ok, safe } from "../types/result.js";
 import { isNodeError } from "./error.js";
 import { logger } from "./logger.js";
 
@@ -30,7 +31,7 @@ type IgnoreRule = {
 };
 
 async function readGitignore(path: string): Promise<Ignore | null> {
-  const result = await tryCatch(
+  const result = await safe(
     () => readFile(path, "utf-8"),
     (e) => e,
   );
@@ -81,24 +82,43 @@ function isPathIgnored(
   return false;
 }
 
+export type BuildTreeError = {
+  readonly type: "build-tree-error";
+  readonly cause: unknown;
+};
+
 export async function buildFileTree(
   rootDir: string,
-): Promise<readonly FileTreeNode[]> {
-  const defaultIg = ignore();
-  defaultIg.add(DEFAULT_IGNORE_PATTERNS);
-  const rules: IgnoreRule[] = [{ ig: defaultIg, baseDir: "" }];
+): Promise<Result<readonly FileTreeNode[], BuildTreeError>> {
+  try {
+    const defaultIg = ignore();
+    defaultIg.add(DEFAULT_IGNORE_PATTERNS);
+    const rules: IgnoreRule[] = [{ ig: defaultIg, baseDir: "" }];
 
-  const rootEntries = await readdir(rootDir, { withFileTypes: true });
+    const rootEntries = await readdir(rootDir, { withFileTypes: true });
 
-  const rootGitignore = await tryLoadGitignoreFromEntries(rootDir, rootEntries);
-  if (rootGitignore) {
-    rules.push({ ig: rootGitignore, baseDir: "" });
+    const rootGitignore = await tryLoadGitignoreFromEntries(
+      rootDir,
+      rootEntries,
+    );
+    if (rootGitignore) {
+      rules.push({ ig: rootGitignore, baseDir: "" });
+    }
+
+    const rootReal = await realpath(rootDir);
+    const visited = new Set<string>([rootReal]);
+
+    const nodes = await processEntries(
+      rootEntries,
+      rootDir,
+      rootDir,
+      rules,
+      visited,
+    );
+    return ok(nodes);
+  } catch (e) {
+    return err({ type: "build-tree-error" as const, cause: e });
   }
-
-  const rootReal = await realpath(rootDir);
-  const visited = new Set<string>([rootReal]);
-
-  return processEntries(rootEntries, rootDir, rootDir, rules, visited);
 }
 
 async function scanDirectory(
@@ -111,7 +131,8 @@ async function scanDirectory(
   try {
     real = await realpath(dir);
   } catch {
-    return []; // broken symlink → skip
+    // Broken symlink — skip silently as this is expected for dangling links
+    return [];
   }
   if (visited.has(real)) {
     return [];

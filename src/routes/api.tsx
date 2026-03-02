@@ -1,4 +1,3 @@
-import { readFile } from "node:fs/promises";
 import { basename, normalize, resolve } from "node:path";
 import { Hono } from "hono";
 import { Breadcrumb } from "../components/layout/breadcrumb.js";
@@ -7,6 +6,7 @@ import { renderMarkdown } from "../markdown/renderer.js";
 import type { FileTreeCache } from "../utils/file-tree-cache.js";
 import { logger } from "../utils/logger.js";
 import { isWithinBase } from "../utils/path.js";
+import { readMarkdownFile } from "../utils/read-markdown.js";
 
 type FileApiConfig = {
   readonly mode: "file";
@@ -26,13 +26,12 @@ export function createApiRoutes(config: ApiConfig): Hono {
 
   app.get("/api/content", async (c) => {
     if (config.mode === "file") {
-      try {
-        const content = await readFile(config.targetPath, "utf-8");
-        return c.html(renderMarkdown(content));
-      } catch (e: unknown) {
-        logger.error("Failed to read file:", e);
+      const result = await readMarkdownFile(config.targetPath);
+      if (!result.ok) {
+        logger.error("Failed to read file:", result.error);
         return c.text("Failed to read file", 500);
       }
+      return c.html(renderMarkdown(result.value));
     }
 
     const relativePath = c.req.query("path");
@@ -49,13 +48,15 @@ export function createApiRoutes(config: ApiConfig): Hono {
       return c.text("Not found", 404);
     }
 
-    try {
-      const content = await readFile(fullPath, "utf-8");
-      return c.html(renderMarkdown(content));
-    } catch (e: unknown) {
-      logger.error("Failed to read file:", e);
-      return c.text("File not found", 404);
+    const result = await readMarkdownFile(fullPath);
+    if (!result.ok) {
+      logger.error("Failed to read file:", result.error);
+      if (result.error.type === "file-not-found") {
+        return c.text("File not found", 404);
+      }
+      return c.text("Failed to read file", 500);
     }
+    return c.html(renderMarkdown(result.value));
   });
 
   app.get("/api/tree", async (c) => {
@@ -63,13 +64,12 @@ export function createApiRoutes(config: ApiConfig): Hono {
       return c.json([]);
     }
 
-    try {
-      const tree = await config.treeCache.get();
-      return c.json(tree);
-    } catch (e: unknown) {
-      logger.error("Failed to read directory tree:", e);
+    const result = await config.treeCache.get();
+    if (!result.ok) {
+      logger.error("Failed to read directory tree:", result.error);
       return c.text("Failed to read directory", 500);
     }
+    return c.json(result.value);
   });
 
   app.get("/api/breadcrumb-html", (c) => {
@@ -93,14 +93,15 @@ export function createApiRoutes(config: ApiConfig): Hono {
       return c.html("");
     }
 
-    try {
-      const currentPath = c.req.query("currentPath") || "";
-      const tree = await config.treeCache.get();
-      return c.html(<FileTreeItems nodes={tree} currentPath={currentPath} />);
-    } catch (e: unknown) {
-      logger.error("Failed to render tree HTML:", e);
+    const currentPath = c.req.query("currentPath") || "";
+    const result = await config.treeCache.get();
+    if (!result.ok) {
+      logger.error("Failed to render tree HTML:", result.error);
       return c.text("Failed to read directory", 500);
     }
+    return c.html(
+      <FileTreeItems nodes={result.value} currentPath={currentPath} />,
+    );
   });
 
   return app;

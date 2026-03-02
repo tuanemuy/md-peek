@@ -1,4 +1,3 @@
-import { readFile } from "node:fs/promises";
 import { basename, normalize, resolve } from "node:path";
 import { Hono } from "hono";
 import type { ResolvedStyles } from "../config/styles.js";
@@ -8,11 +7,10 @@ import {
   DirectoryViewPage,
   FilePreviewPage,
 } from "../pages/index.js";
-import { isNodeError } from "../utils/error.js";
-import type { FileTreeNode } from "../utils/file-tree.js";
 import type { FileTreeCache } from "../utils/file-tree-cache.js";
 import { logger } from "../utils/logger.js";
 import { isWithinBase } from "../utils/path.js";
+import { readMarkdownFile } from "../utils/read-markdown.js";
 
 export function createDirectoryRoutes(
   dirPath: string,
@@ -22,16 +20,18 @@ export function createDirectoryRoutes(
   const app = new Hono();
 
   app.get("/", async (c) => {
-    let tree: readonly FileTreeNode[];
-    try {
-      tree = await treeCache.get();
-    } catch (e: unknown) {
-      logger.error("Failed to build file tree:", e);
+    const treeResult = await treeCache.get();
+    if (!treeResult.ok) {
+      logger.error("Failed to build file tree:", treeResult.error);
       return c.text("Internal server error", 500);
     }
     const title = basename(dirPath) || dirPath;
     return c.html(
-      <DirectoryListPage title={title} tree={tree} styles={styles} />,
+      <DirectoryListPage
+        title={title}
+        tree={treeResult.value}
+        styles={styles}
+      />,
     );
   });
 
@@ -50,29 +50,34 @@ export function createDirectoryRoutes(
       return c.text("Not found", 404);
     }
 
-    try {
-      const content = await readFile(fullPath, "utf-8");
-      const html = renderMarkdown(content);
-      const tree = await treeCache.get();
-      const dirTitle = basename(dirPath) || dirPath;
-      const fileTitle = basename(relativePath);
-      return c.html(
-        <DirectoryViewPage
-          dirTitle={dirTitle}
-          fileTitle={fileTitle}
-          htmlContent={html}
-          tree={tree}
-          currentPath={relativePath}
-          styles={styles}
-        />,
-      );
-    } catch (e: unknown) {
-      if (isNodeError(e) && e.code === "ENOENT") {
+    const contentResult = await readMarkdownFile(fullPath);
+    if (!contentResult.ok) {
+      if (contentResult.error.type === "file-not-found") {
         return c.text("File not found", 404);
       }
-      logger.error("Failed to render file:", e);
+      logger.error("Failed to render file:", contentResult.error);
       return c.text("Internal server error", 500);
     }
+
+    const treeResult = await treeCache.get();
+    if (!treeResult.ok) {
+      logger.error("Failed to build file tree:", treeResult.error);
+      return c.text("Internal server error", 500);
+    }
+
+    const html = renderMarkdown(contentResult.value);
+    const dirTitle = basename(dirPath) || dirPath;
+    const fileTitle = basename(relativePath);
+    return c.html(
+      <DirectoryViewPage
+        dirTitle={dirTitle}
+        fileTitle={fileTitle}
+        htmlContent={html}
+        tree={treeResult.value}
+        currentPath={relativePath}
+        styles={styles}
+      />,
+    );
   });
 
   app.get("/:path{.+}", async (c) => {
@@ -85,24 +90,20 @@ export function createDirectoryRoutes(
       return c.text("Not found", 404);
     }
 
-    try {
-      const content = await readFile(fullPath, "utf-8");
-      const html = renderMarkdown(content);
-      const fileTitle = basename(relativePath);
-      return c.html(
-        <FilePreviewPage
-          title={fileTitle}
-          htmlContent={html}
-          styles={styles}
-        />,
-      );
-    } catch (e: unknown) {
-      if (isNodeError(e) && e.code === "ENOENT") {
+    const result = await readMarkdownFile(fullPath);
+    if (!result.ok) {
+      if (result.error.type === "file-not-found") {
         return c.text("File not found", 404);
       }
-      logger.error("Failed to render file:", e);
+      logger.error("Failed to render file:", result.error);
       return c.text("Internal server error", 500);
     }
+
+    const html = renderMarkdown(result.value);
+    const fileTitle = basename(relativePath);
+    return c.html(
+      <FilePreviewPage title={fileTitle} htmlContent={html} styles={styles} />,
+    );
   });
 
   return app;

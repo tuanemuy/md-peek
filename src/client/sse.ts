@@ -1,3 +1,4 @@
+import { safeSync } from "../types/result.ts";
 import { logger } from "../utils/logger.ts";
 import { updateContent } from "./update-content.ts";
 import { updateTree } from "./update-tree.ts";
@@ -12,12 +13,12 @@ function normalizePath(p: string): string {
 }
 
 function parseFileChangedData(raw: string): { path: string } | null {
-  let data: unknown;
-  try {
-    data = JSON.parse(raw);
-  } catch {
-    return null;
-  }
+  const result = safeSync(
+    () => JSON.parse(raw) as unknown,
+    () => null,
+  );
+  if (!result.ok) return null;
+  const data = result.value;
   if (!data || typeof data !== "object") return null;
   const obj = data as Record<string, unknown>;
   if (typeof obj.path !== "string") return null;

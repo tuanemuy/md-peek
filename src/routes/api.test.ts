@@ -2,6 +2,7 @@ import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { initMarkdown } from "../markdown/renderer.js";
+import { err } from "../types/result.js";
 import { createFileTreeCache } from "../utils/file-tree-cache.js";
 import { createApiRoutes } from "./api.js";
 
@@ -148,7 +149,13 @@ describe("api routes - file mode edge cases", () => {
 
 describe("api routes - tree error handling", () => {
   const failingTreeCache = {
-    get: () => Promise.reject(new Error("disk failure")),
+    get: () =>
+      Promise.resolve(
+        err({
+          type: "build-tree-error" as const,
+          cause: new Error("disk failure"),
+        }),
+      ),
     invalidate: () => {},
   };
 

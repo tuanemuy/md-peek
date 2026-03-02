@@ -1,3 +1,4 @@
+import { safeSync } from "../types/result.ts";
 import { logger } from "../utils/logger.ts";
 import { applyBreadcrumb, fetchBreadcrumb } from "./update-breadcrumb.ts";
 import { applyContent, fetchContent } from "./update-content.ts";
@@ -54,12 +55,12 @@ export function initNavigation(): void {
     ) as HTMLAnchorElement | null;
     if (!link) return;
 
-    let url: URL;
-    try {
-      url = new URL(link.href, window.location.origin);
-    } catch {
-      return;
-    }
+    const urlResult = safeSync(
+      () => new URL(link.href, window.location.origin),
+      () => null,
+    );
+    if (!urlResult.ok) return;
+    const url = urlResult.value;
 
     if (url.pathname !== "/view") return;
     const path = url.searchParams.get("path");

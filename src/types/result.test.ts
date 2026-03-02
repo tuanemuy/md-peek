@@ -8,7 +8,8 @@ import {
   match,
   ok,
   type Result,
-  tryCatch,
+  safe,
+  safeSync,
 } from "./result.js";
 
 describe("ok / err", () => {
@@ -96,9 +97,30 @@ describe("getOr", () => {
   });
 });
 
-describe("tryCatch", () => {
+describe("safeSync", () => {
+  it("returns ok when the function succeeds", () => {
+    const result = safeSync(
+      () => JSON.parse('{"a":1}'),
+      (e) => String(e),
+    );
+    expect(result).toEqual(ok({ a: 1 }));
+  });
+
+  it("returns err when the function throws", () => {
+    const result = safeSync(
+      () => JSON.parse("invalid"),
+      (e) => (e instanceof Error ? e.message : "unknown"),
+    );
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toMatch(/JSON/);
+    }
+  });
+});
+
+describe("safe", () => {
   it("returns ok when the async function succeeds", async () => {
-    const result = await tryCatch(
+    const result = await safe(
       () => Promise.resolve(42),
       (e) => String(e),
     );
@@ -106,7 +128,7 @@ describe("tryCatch", () => {
   });
 
   it("returns err when the async function throws", async () => {
-    const result = await tryCatch(
+    const result = await safe(
       () => Promise.reject(new Error("boom")),
       (e) => (e instanceof Error ? e.message : "unknown"),
     );

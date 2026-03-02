@@ -3,7 +3,7 @@ import { homedir } from "node:os";
 import { isAbsolute, resolve } from "node:path";
 import contentCssDefault from "../styles/content.css";
 import type { Result } from "../types/result.js";
-import { map, ok, tryCatch } from "../types/result.js";
+import { map, ok, safe } from "../types/result.js";
 import { isNodeError } from "../utils/error.js";
 
 export type ResolvedStyles = {
@@ -34,7 +34,7 @@ function getXdgConfigPath(): string {
 async function tryReadCss(
   cssPath: string,
 ): Promise<Result<string, StylesError>> {
-  return tryCatch(
+  return safe(
     () => readFile(cssPath, "utf-8"),
     (e): StylesError =>
       isNodeError(e) && e.code === "ENOENT"
