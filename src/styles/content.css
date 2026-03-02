@@ -1,10 +1,10 @@
 .markdown-body {
-  color: #1f2328;
+  color: var(--foreground);
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica,
     Arial, sans-serif;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.75;
   word-wrap: break-word;
 
   h1,
@@ -16,7 +16,7 @@
     margin-top: 24px;
     margin-bottom: 16px;
     font-weight: 600;
-    line-height: 1.25;
+    line-height: 1.5;
   }
 
   h1 {
@@ -26,7 +26,7 @@
   h2 {
     padding-bottom: 0.3em;
     font-size: 1.5em;
-    border-bottom: 1px solid #d1d9e0;
+    border-bottom: 1px solid var(--border);
   }
 
   h3 {
@@ -43,7 +43,7 @@
 
   h6 {
     font-size: 0.85em;
-    color: #656d76;
+    color: var(--muted-foreground);
   }
 
   p {
@@ -52,7 +52,7 @@
   }
 
   a {
-    color: #0969da;
+    color: var(--primary);
     text-decoration: none;
 
     &:hover {
@@ -68,7 +68,7 @@
   ol {
     margin-top: 0;
     margin-bottom: 16px;
-    padding-left: 2em;
+    padding-left: 1.5em;
     list-style: revert;
   }
 
@@ -79,8 +79,8 @@
   blockquote {
     margin: 0 0 16px 0;
     padding: 0 1em;
-    color: #656d76;
-    border-left: 0.25em solid #d1d9e0;
+    color: var(--muted-foreground);
+    border-left: 0.25em solid var(--border);
   }
 
   code {
@@ -88,7 +88,7 @@
     margin: 0;
     font-size: 85%;
     white-space: break-spaces;
-    background-color: rgba(175, 184, 193, 0.2);
+    background-color: var(--muted);
     border-radius: 6px;
     font-family:
       ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
@@ -102,8 +102,8 @@
     overflow: auto;
     font-size: 85%;
     line-height: 1.45;
-    color: #1f2328;
-    background-color: #f6f8fa;
+    color: var(--shiki-light);
+    background-color: var(--muted);
     border-radius: 6px;
 
     code {
@@ -125,7 +125,7 @@
   .shiki,
   .shiki span {
     color: var(--shiki-light);
-    background-color: var(--shiki-light-bg);
+    background-color: var(--muted);
   }
 
   table {
@@ -149,12 +149,8 @@
     }
 
     tr {
-      background-color: #ffffff;
+      background-color: var(--card);
       border-top: 1px solid #d1d9e0;
-
-      &:nth-child(2n) {
-        background-color: #f6f8fa;
-      }
     }
   }
 
@@ -162,7 +158,7 @@
     height: 0.25em;
     padding: 0;
     margin: 24px 0;
-    background-color: #d1d9e0;
+    background-color: var(--border);
     border: 0;
   }
 
@@ -192,58 +188,9 @@
 /* Dark mode */
 
 .dark .markdown-body {
-  color: #e6edf3;
-
-  h1,
-  h2 {
-    border-bottom-color: #3d444d;
-  }
-
-  h6 {
-    color: #9198a1;
-  }
-
-  a {
-    color: #4493f8;
-  }
-
-  blockquote {
-    color: #9198a1;
-    border-left-color: #3d444d;
-  }
-
-  code {
-    background-color: rgba(110, 118, 129, 0.4);
-  }
-
-  pre:not(.shiki) {
-    color: #e6edf3;
-    background-color: #161b22;
-  }
-
   .shiki,
   .shiki span {
     color: var(--shiki-dark);
-    background-color: var(--shiki-dark-bg);
-  }
-
-  table {
-    th,
-    td {
-      border-color: #3d444d;
-    }
-
-    tr {
-      background-color: #0d1117;
-      border-top-color: #3d444d;
-
-      &:nth-child(2n) {
-        background-color: #161b22;
-      }
-    }
-  }
-
-  hr {
-    background-color: #3d444d;
+    background-color: var(--muted);
   }
 }
