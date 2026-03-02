@@ -23,46 +23,46 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0.004 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0.004 285.823);
-  --primary: oklch(0.546 0.245 262.881);
-  --primary-foreground: oklch(0.985 0.001 286.375);
-  --muted: oklch(0.967 0.003 264.542);
-  --muted-foreground: oklch(0.446 0.03 256.802);
-  --border: oklch(0.928 0.006 264.531);
-  --sidebar: oklch(0.967 0.003 264.542);
-  --sidebar-foreground: oklch(0.278 0.033 256.848);
-  --sidebar-primary: oklch(0.546 0.245 262.881);
-  --sidebar-accent: oklch(0.928 0.006 264.531);
-  --sidebar-accent-foreground: oklch(0.278 0.033 256.848);
-  --sidebar-border: oklch(0.928 0.006 264.531);
+  --background: #ffffff;
+  --foreground: #393a34;
+  --card: #ffffff;
+  --card-foreground: #393a34;
+  --primary: #1c6b48;
+  --primary-foreground: #ffffff;
+  --muted: #f7f7f7;
+  --muted-foreground: #6a737d;
+  --border: #f0f0f0;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #4e4f47;
+  --sidebar-primary: #1c6b48;
+  --sidebar-accent: #f7f7f7;
+  --sidebar-accent-foreground: #393a34;
+  --sidebar-border: #f0f0f0;
   --font-sans: ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --scrollbar-track: oklch(0.967 0.003 264.542);
-  --scrollbar-thumb: oklch(0.87 0.006 264.531);
+  --scrollbar-track: #f7f7f7;
+  --scrollbar-thumb: #393a3450;
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: oklch(0.145 0.004 285.823);
-  --foreground: oklch(0.985 0.001 286.375);
-  --card: oklch(0.205 0.012 264.542);
-  --card-foreground: oklch(0.985 0.001 286.375);
-  --primary: oklch(0.646 0.222 262.881);
-  --primary-foreground: oklch(0.145 0.004 285.823);
-  --muted: oklch(0.269 0.015 264.542);
-  --muted-foreground: oklch(0.646 0.018 264.542);
-  --border: oklch(0.369 0.015 264.531);
-  --sidebar: oklch(0.205 0.012 264.542);
-  --sidebar-foreground: oklch(0.985 0.001 286.375);
-  --sidebar-primary: oklch(0.646 0.222 262.881);
-  --sidebar-accent: oklch(0.369 0.015 264.531);
-  --sidebar-accent-foreground: oklch(0.985 0.001 286.375);
-  --sidebar-border: oklch(0.369 0.015 264.531);
-  --scrollbar-track: oklch(0.205 0.012 264.542);
-  --scrollbar-thumb: oklch(0.369 0.015 264.531);
+  --background: #121212;
+  --foreground: #dbd7caee;
+  --card: #181818;
+  --card-foreground: #dbd7caee;
+  --primary: #4d9375;
+  --primary-foreground: #121212;
+  --muted: #181818;
+  --muted-foreground: #959da5;
+  --border: #191919;
+  --sidebar: #121212;
+  --sidebar-foreground: #bfbaaa;
+  --sidebar-primary: #4d9375;
+  --sidebar-accent: #181818;
+  --sidebar-accent-foreground: #dbd7caee;
+  --sidebar-border: #191919;
+  --scrollbar-track: #181818;
+  --scrollbar-thumb: #dedcd550;
 }
 
 @media (min-width: 1024px) {
