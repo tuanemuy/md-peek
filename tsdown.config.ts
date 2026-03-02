@@ -6,7 +6,4 @@ export default defineConfig({
   format: "esm",
   clean: true,
   loader: { ".css": "text" },
-  outputOptions: {
-    banner: "#!/usr/bin/env node",
-  },
 });

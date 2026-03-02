@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { execFile } from "node:child_process";
 import { stat } from "node:fs/promises";
 import { createRequire } from "node:module";
