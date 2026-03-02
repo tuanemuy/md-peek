@@ -9,9 +9,6 @@
   "files": [
     "dist"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "dev:css": "postcss src/styles/global.css -o src/renderer/global.css --watch",
     "dev:server": "tsx --import ./src/loaders/css.mjs src/index.ts",
@@ -35,7 +32,7 @@
     "cli",
     "live-reload"
   ],
-  "author": "tuanemuy",
+  "author": "Hikaru Otabe",
   "license": "MIT",
   "engines": {
     "node": ">=22.0.0"
