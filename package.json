@@ -24,7 +24,8 @@
     "format:check": "biome format",
     "typecheck": "tsgo",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepublishOnly": "pnpm build"
   },
   "keywords": [
     "markdown",
