@@ -1,6 +1,7 @@
 import { chmodSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { assertErr, assertOk } from "../test-utils/assert-result.js";
 import { buildFileTree } from "./file-tree.js";
 
 const testDir = join(import.meta.dirname, "__test_fixture__");
@@ -29,7 +30,8 @@ afterAll(() => {
 
 describe("buildFileTree", () => {
   it("builds a tree with directories and files", async () => {
-    const tree = await buildFileTree(testDir);
+    const result = await buildFileTree(testDir);
+    const tree = assertOk(result);
     expect(tree.length).toBeGreaterThan(0);
 
     const dirs = tree.filter((n) => n.type === "directory");
@@ -41,7 +43,8 @@ describe("buildFileTree", () => {
   });
 
   it("excludes .git and node_modules", async () => {
-    const tree = await buildFileTree(testDir);
+    const result = await buildFileTree(testDir);
+    const tree = assertOk(result);
     const allNames = flattenNames(tree);
 
     expect(allNames).not.toContain(".git");
@@ -49,7 +52,8 @@ describe("buildFileTree", () => {
   });
 
   it("only includes .md files", async () => {
-    const tree = await buildFileTree(testDir);
+    const result = await buildFileTree(testDir);
+    const tree = assertOk(result);
     const allFiles = flattenFiles(tree);
 
     for (const f of allFiles) {
@@ -59,7 +63,8 @@ describe("buildFileTree", () => {
   });
 
   it("sorts directories before files, alphabetically", async () => {
-    const tree = await buildFileTree(testDir);
+    const result = await buildFileTree(testDir);
+    const tree = assertOk(result);
     const types = tree.map((n) => n.type);
     const lastDirIndex = types.lastIndexOf("directory");
     const firstFileIndex = types.indexOf("file");
@@ -70,19 +75,22 @@ describe("buildFileTree", () => {
   });
 
   it("excludes dotfiles", async () => {
-    const tree = await buildFileTree(testDir);
+    const result = await buildFileTree(testDir);
+    const tree = assertOk(result);
     const allNames = flattenNames(tree);
     expect(allNames).not.toContain(".hidden.md");
   });
 
   it("excludes empty directories", async () => {
-    const tree = await buildFileTree(testDir);
+    const result = await buildFileTree(testDir);
+    const tree = assertOk(result);
     const allNames = flattenNames(tree);
     expect(allNames).not.toContain("empty-dir");
   });
 
   it("uses relative paths", async () => {
-    const tree = await buildFileTree(testDir);
+    const result = await buildFileTree(testDir);
+    const tree = assertOk(result);
     const docsDir = tree.find((n) => n.name === "docs");
     expect(docsDir?.path).toBe("docs");
 
@@ -90,6 +98,15 @@ describe("buildFileTree", () => {
       const overview = docsDir.children.find((n) => n.name === "overview.md");
       expect(overview?.path).toBe("docs/overview.md");
     }
+  });
+});
+
+describe("buildFileTree error handling", () => {
+  it("returns root-not-accessible when the root directory does not exist", async () => {
+    const result = await buildFileTree("/nonexistent/path");
+    const error = assertErr(result);
+    expect(error.type).toBe("root-not-accessible");
+    expect(error.cause).toBeInstanceOf(Error);
   });
 });
 
@@ -115,7 +132,8 @@ describe("buildFileTree with .gitignore", () => {
   });
 
   it("excludes directories listed in .gitignore", async () => {
-    const tree = await buildFileTree(gitignoreDir);
+    const result = await buildFileTree(gitignoreDir);
+    const tree = assertOk(result);
     const allNames = flattenNames(tree);
 
     expect(allNames).not.toContain("vendor");
@@ -123,7 +141,8 @@ describe("buildFileTree with .gitignore", () => {
   });
 
   it("includes directories not listed in .gitignore", async () => {
-    const tree = await buildFileTree(gitignoreDir);
+    const result = await buildFileTree(gitignoreDir);
+    const tree = assertOk(result);
     const allNames = flattenNames(tree);
 
     expect(allNames).toContain("docs");
@@ -163,7 +182,8 @@ describe("buildFileTree with nested .gitignore", () => {
   });
 
   it("excludes directories listed in nested .gitignore", async () => {
-    const tree = await buildFileTree(nestedDir);
+    const result = await buildFileTree(nestedDir);
+    const tree = assertOk(result);
     const allNames = flattenNames(tree);
 
     expect(allNames).not.toContain("drafts");
@@ -173,7 +193,8 @@ describe("buildFileTree with nested .gitignore", () => {
   });
 
   it("includes directories not listed in nested .gitignore", async () => {
-    const tree = await buildFileTree(nestedDir);
+    const result = await buildFileTree(nestedDir);
+    const tree = assertOk(result);
     const allNames = flattenNames(tree);
 
     expect(allNames).toContain("docs");
@@ -186,7 +207,8 @@ describe("buildFileTree with nested .gitignore", () => {
   });
 
   it("nested .gitignore does not affect sibling directories", async () => {
-    const tree = await buildFileTree(nestedDir);
+    const result = await buildFileTree(nestedDir);
+    const tree = assertOk(result);
     const allNames = flattenNames(tree);
 
     // docs/.gitignore has "drafts/" but src/public should not be affected
@@ -215,7 +237,8 @@ describe.skipIf(isRoot)("buildFileTree with unreadable .gitignore", () => {
 
   it("continues building the tree when .gitignore is unreadable", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const tree = await buildFileTree(permDir);
+    const result = await buildFileTree(permDir);
+    const tree = assertOk(result);
     expect(tree.length).toBeGreaterThan(0);
     expect(tree.some((n) => n.name === "README.md")).toBe(true);
     expect(warnSpy).toHaveBeenCalledWith(

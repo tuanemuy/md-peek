@@ -8,7 +8,7 @@ import {
   match,
   ok,
   type Result,
-  tryCatch,
+  safe,
 } from "./result.js";
 
 describe("ok / err", () => {
@@ -96,9 +96,9 @@ describe("getOr", () => {
   });
 });
 
-describe("tryCatch", () => {
+describe("safe", () => {
   it("returns ok when the async function succeeds", async () => {
-    const result = await tryCatch(
+    const result = await safe(
       () => Promise.resolve(42),
       (e) => String(e),
     );
@@ -106,7 +106,7 @@ describe("tryCatch", () => {
   });
 
   it("returns err when the async function throws", async () => {
-    const result = await tryCatch(
+    const result = await safe(
       () => Promise.reject(new Error("boom")),
       (e) => (e instanceof Error ? e.message : "unknown"),
     );

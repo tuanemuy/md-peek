@@ -1,10 +1,12 @@
 import type { Dirent } from "node:fs";
-import { readdir, readFile, realpath } from "node:fs/promises";
+import { readdir, realpath } from "node:fs/promises";
 import { join, relative } from "node:path";
 import ignore, { type Ignore } from "ignore";
-import { tryCatch } from "../types/result.js";
-import { isNodeError } from "./error.js";
+import { type TypedError, typedError } from "../types/error.js";
+import type { Result } from "../types/result.js";
+import { err, ok } from "../types/result.js";
 import { logger } from "./logger.js";
+import { readTextFile } from "./read-text-file.js";
 
 export type FileTreeNode = {
   readonly name: string;
@@ -30,21 +32,15 @@ type IgnoreRule = {
 };
 
 async function readGitignore(path: string): Promise<Ignore | null> {
-  const result = await tryCatch(
-    () => readFile(path, "utf-8"),
-    (e) => e,
-  );
-
+  const result = await readTextFile(path);
   if (result.ok) {
     const ig = ignore();
     ig.add(result.value);
     return ig;
   }
-
-  if (!(isNodeError(result.error) && result.error.code === "ENOENT")) {
+  if (result.error.type !== "file-not-found") {
     logger.warn(`Failed to read .gitignore at ${path}:`, result.error);
   }
-
   return null;
 }
 
@@ -81,24 +77,49 @@ function isPathIgnored(
   return false;
 }
 
+export type RootNotAccessibleError = TypedError<"root-not-accessible">;
+export type TreeTraversalError = TypedError<"tree-traversal-error">;
+export type BuildTreeError = RootNotAccessibleError | TreeTraversalError;
+
 export async function buildFileTree(
   rootDir: string,
-): Promise<readonly FileTreeNode[]> {
+): Promise<Result<readonly FileTreeNode[], BuildTreeError>> {
+  let rootEntries: Dirent[];
+  try {
+    rootEntries = await readdir(rootDir, { withFileTypes: true });
+  } catch (e) {
+    return err(typedError("root-not-accessible", e));
+  }
+
   const defaultIg = ignore();
   defaultIg.add(DEFAULT_IGNORE_PATTERNS);
   const rules: IgnoreRule[] = [{ ig: defaultIg, baseDir: "" }];
-
-  const rootEntries = await readdir(rootDir, { withFileTypes: true });
 
   const rootGitignore = await tryLoadGitignoreFromEntries(rootDir, rootEntries);
   if (rootGitignore) {
     rules.push({ ig: rootGitignore, baseDir: "" });
   }
 
-  const rootReal = await realpath(rootDir);
+  let rootReal: string;
+  try {
+    rootReal = await realpath(rootDir);
+  } catch (e) {
+    return err(typedError("root-not-accessible", e));
+  }
   const visited = new Set<string>([rootReal]);
 
-  return processEntries(rootEntries, rootDir, rootDir, rules, visited);
+  try {
+    const nodes = await processEntries(
+      rootEntries,
+      rootDir,
+      rootDir,
+      rules,
+      visited,
+    );
+    return ok(nodes);
+  } catch (e) {
+    return err(typedError("tree-traversal-error", e));
+  }
 }
 
 async function scanDirectory(
@@ -111,14 +132,21 @@ async function scanDirectory(
   try {
     real = await realpath(dir);
   } catch {
-    return []; // broken symlink → skip
+    // Broken symlink — skip silently as this is expected for dangling links
+    return [];
   }
   if (visited.has(real)) {
     return [];
   }
   visited.add(real);
 
-  const entries = await readdir(dir, { withFileTypes: true });
+  let entries: Dirent[];
+  try {
+    entries = await readdir(dir, { withFileTypes: true });
+  } catch (e) {
+    logger.warn(`Failed to read directory ${dir}:`, e);
+    return [];
+  }
 
   const localGitignore = await tryLoadGitignoreFromEntries(dir, entries);
   const rules = localGitignore

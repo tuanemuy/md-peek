@@ -42,13 +42,13 @@ export function getOr<T, E>(result: Result<T, E>, defaultValue: T): T {
   return result.ok ? result.value : defaultValue;
 }
 
-export async function tryCatch<T, E>(
+export async function safe<T, E>(
   fn: () => Promise<T>,
-  mapError: (error: unknown) => E,
+  onError: (error: unknown) => E,
 ): Promise<Result<T, E>> {
   try {
     return ok(await fn());
   } catch (e) {
-    return err(mapError(e));
+    return err(onError(e));
   }
 }

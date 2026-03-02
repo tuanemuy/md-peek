@@ -1,8 +1,9 @@
-import type { FileTreeNode } from "./file-tree.js";
+import type { Result } from "../types/result.js";
+import type { BuildTreeError, FileTreeNode } from "./file-tree.js";
 import { buildFileTree } from "./file-tree.js";
 
 export type FileTreeCache = {
-  readonly get: () => Promise<readonly FileTreeNode[]>;
+  readonly get: () => Promise<Result<readonly FileTreeNode[], BuildTreeError>>;
   readonly invalidate: () => void;
 };
 
@@ -12,27 +13,24 @@ export type FileTreeCache = {
  * call to `get()` after invalidation will trigger a fresh build.
  */
 export function createFileTreeCache(rootDir: string): FileTreeCache {
-  let cached: readonly FileTreeNode[] | null = null;
-  let pending: Promise<readonly FileTreeNode[]> | null = null;
+  let cached: Result<readonly FileTreeNode[], BuildTreeError> | null = null;
+  let pending: Promise<Result<readonly FileTreeNode[], BuildTreeError>> | null =
+    null;
 
   return {
     async get() {
       if (cached) return cached;
       if (pending) return pending;
-      const currentPending = buildFileTree(rootDir)
-        .then((result) => {
-          if (pending === currentPending) {
+      const currentPending = buildFileTree(rootDir).then((result) => {
+        if (pending === currentPending) {
+          // Only cache successful results so errors trigger a retry on next get()
+          if (result.ok) {
             cached = result;
-            pending = null;
           }
-          return result;
-        })
-        .catch((error: unknown) => {
-          if (pending === currentPending) {
-            pending = null;
-          }
-          throw error;
-        });
+          pending = null;
+        }
+        return result;
+      });
       pending = currentPending;
       return currentPending;
     },

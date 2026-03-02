@@ -1,6 +1,7 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { assertErr } from "../test-utils/assert-result.js";
 import { createFileTreeCache } from "./file-tree-cache.js";
 
 const testDir = join(import.meta.dirname, "__test_cache_fixture__");
@@ -55,15 +56,19 @@ describe("createFileTreeCache", () => {
     expect(first).not.toBe(second);
   });
 
-  it("propagates buildFileTree errors", async () => {
+  it("returns err result for nonexistent path", async () => {
     const cache = createFileTreeCache("/nonexistent/path");
-    await expect(cache.get()).rejects.toThrow();
+    const result = await cache.get();
+    const error = assertErr(result);
+    expect(error.type).toBe("root-not-accessible");
   });
 
-  it("allows get() again after a previous failure", async () => {
+  it("retries after a previous failure instead of caching error", async () => {
     const cache = createFileTreeCache("/nonexistent/path");
-    await expect(cache.get()).rejects.toThrow();
-    // pending should be cleared after failure, so a second call retries
-    await expect(cache.get()).rejects.toThrow();
+    const first = await cache.get();
+    expect(first.ok).toBe(false);
+    const second = await cache.get();
+    expect(second.ok).toBe(false);
+    expect(first).not.toBe(second);
   });
 });
