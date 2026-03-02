@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/tuanemuy/markdown-peek/compare/v1.1.2...v1.2.0) (2026-03-02)
+
+
+### Features
+
+* change code highlight theme from gruvbox to vitesse ([39942b1](https://github.com/tuanemuy/markdown-peek/commit/39942b1e9a11e29e753a4434f079e8f16a50e8a1))
+
 ## [1.1.2](https://github.com/tuanemuy/markdown-peek/compare/v1.1.1...v1.1.2) (2026-03-02)
 
 
