@@ -76,6 +76,17 @@ describe("fetchTree", () => {
     expect(mockFetch).toHaveBeenCalledWith("/api/tree", undefined);
   });
 
+  it("returns null when response is not an array", async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ error: "bad" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const result = await fetchTree();
+    expect(result).toBeNull();
+  });
+
   it("returns null on HTTP error", async () => {
     mockFetch.mockResolvedValueOnce(
       new Response("Internal error", { status: 500 }),

@@ -36,7 +36,12 @@ export async function fetchTree(options?: {
       console.error(`[peek] Failed to fetch tree: HTTP ${res.status}`);
       return null;
     }
-    return (await res.json()) as FileTreeNode[];
+    const data: unknown = await res.json();
+    if (!Array.isArray(data)) {
+      console.error("[peek] Unexpected tree response format");
+      return null;
+    }
+    return data as FileTreeNode[];
   } catch (e: unknown) {
     if (e instanceof DOMException && e.name === "AbortError") throw e;
     console.error("[peek] Failed to fetch tree:", e);

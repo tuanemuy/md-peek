@@ -22,7 +22,7 @@ export function Document({
   children,
 }: DocumentProps) {
   const initialStateScript = initialState
-    ? `window.__INITIAL_STATE__=${JSON.stringify(initialState).replaceAll("<", "\\u003c")}`
+    ? `window.__INITIAL_STATE__=${JSON.stringify(initialState).replaceAll("<", "\\u003c").replaceAll(">", "\\u003e").replaceAll("\u2028", "\\u2028").replaceAll("\u2029", "\\u2029")}`
     : "";
   return (
     <html lang="en">

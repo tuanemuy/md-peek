@@ -22,6 +22,7 @@ export function Sidebar({ title, tree, currentPath, onClose }: SidebarProps) {
       {/* Sidebar — translate driven by body[data-sidebar-open] via CSS */}
       <aside
         id="sidebar"
+        aria-label="File navigation"
         class="fixed inset-y-0 start-0 z-60 w-72 lg:w-auto overflow-hidden bg-sidebar border-e border-sidebar-border -translate-x-full"
       >
         <div class="relative flex flex-col h-full max-h-full pt-3">

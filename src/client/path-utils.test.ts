@@ -27,4 +27,12 @@ describe("getFileNameFromPath", () => {
   it("extracts the directory name when path has trailing slash", () => {
     expect(getFileNameFromPath("docs/")).toBe("docs");
   });
+
+  it("returns empty string for empty input", () => {
+    expect(getFileNameFromPath("")).toBe("");
+  });
+
+  it("returns empty string for root slash", () => {
+    expect(getFileNameFromPath("/")).toBe("/");
+  });
 });

@@ -26,7 +26,7 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
           const isLast = index === items.length - 1;
           return (
             <li
-              key={item.label}
+              key={index}
               class={
                 isLast
                   ? BREADCRUMB_CLASSES.fileItem

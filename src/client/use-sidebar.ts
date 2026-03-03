@@ -25,7 +25,9 @@ export function useSidebar(): SidebarActions {
   const [open, setOpen] = useState(false);
   const initialMount = useRef(true);
 
-  // Initial state restoration + ongoing body[data-sidebar-open] sync
+  // Client-only: useLayoutEffect is safe because useSidebar is only called
+  // from DirectoryApp which runs exclusively via hydrate() on the client.
+  // preact-render-to-string does not execute effects during SSR.
   useLayoutEffect(() => {
     if (initialMount.current) {
       initialMount.current = false;
@@ -76,34 +78,6 @@ export function useSidebar(): SidebarActions {
     }
   }, [open]);
 
-  // Sync overlay state when crossing the desktop/mobile breakpoint
-  useEffect(() => {
-    let wasDesktop = isDesktop();
-    let rafId = 0;
-
-    function handleResize() {
-      if (rafId) return;
-      rafId = requestAnimationFrame(() => {
-        rafId = 0;
-        const nowDesktop = isDesktop();
-        if (wasDesktop === nowDesktop) return;
-        wasDesktop = nowDesktop;
-
-        if (!document.body.hasAttribute("data-sidebar-open")) return;
-
-        // Mobile → desktop: hide overlay (handled by CSS media query)
-        // Desktop → mobile: show overlay (handled by CSS media query)
-        // No JS action needed — CSS handles it
-      });
-    }
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      if (rafId) cancelAnimationFrame(rafId);
-    };
-  }, []);
-
   // Sidebar resize handle (pointer drag)
   useEffect(() => {
     const handle = document.getElementById("sidebar-resize");
@@ -124,19 +98,23 @@ export function useSidebar(): SidebarActions {
         );
       }
 
-      function onPointerUp(ev: PointerEvent): void {
+      function onPointerEnd(ev: PointerEvent): void {
         handle.releasePointerCapture(ev.pointerId);
         handle.removeEventListener("pointermove", onPointerMove);
-        handle.removeEventListener("pointerup", onPointerUp);
+        handle.removeEventListener("pointerup", onPointerEnd);
+        handle.removeEventListener("pointercancel", onPointerEnd);
         document.body.style.removeProperty("user-select");
         sidebar?.style.removeProperty("transition");
 
-        const width = Math.min(Math.max(ev.clientX, MIN_WIDTH), MAX_WIDTH);
-        localStorage.setItem(SIDEBAR_WIDTH_KEY, String(width));
+        if (ev.type === "pointerup") {
+          const width = Math.min(Math.max(ev.clientX, MIN_WIDTH), MAX_WIDTH);
+          localStorage.setItem(SIDEBAR_WIDTH_KEY, String(width));
+        }
       }
 
       handle.addEventListener("pointermove", onPointerMove);
-      handle.addEventListener("pointerup", onPointerUp);
+      handle.addEventListener("pointerup", onPointerEnd);
+      handle.addEventListener("pointercancel", onPointerEnd);
     }
 
     handle.addEventListener("pointerdown", onPointerDown);

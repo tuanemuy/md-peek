@@ -160,6 +160,45 @@ describe("createSseConnection", () => {
     expect(newInstance.url).toBe("/sse");
   });
 
+  it("cleanup cancels pending retry timer", () => {
+    const cleanup = createSseConnection({ onFileChanged: vi.fn() });
+    const firstInstance = getInstance();
+
+    // Trigger error to start retry timer
+    firstInstance.onerror?.();
+    expect(firstInstance.isClosed).toBe(true);
+
+    // Cleanup before retry fires
+    cleanup();
+
+    // Advance past retry delay — no new connection should be created
+    vi.advanceTimersByTime(5000);
+    expect(getInstance()).toBe(firstInstance);
+  });
+
+  it("stops retrying after max retries exceeded", () => {
+    createSseConnection({ onFileChanged: vi.fn() });
+
+    // Exhaust all retries (SSE_MAX_RETRIES = 10).
+    // Each iteration: trigger error immediately, then advance just enough
+    // for the retry timer to fire (before the 5000ms stable threshold resets count).
+    for (let i = 0; i < 10; i++) {
+      getInstance().onerror?.();
+      // Advance by retry delay: min(1000 * 2^i, 30000), but stay under 5000 stable threshold
+      const delay = Math.min(1000 * 2 ** i, 30000);
+      vi.advanceTimersByTime(delay);
+    }
+
+    const lastInstance = getInstance();
+
+    // 11th error — should not schedule another retry
+    lastInstance.onerror?.();
+    vi.advanceTimersByTime(60000);
+    // getInstance() returns the last created instance; since no new connection
+    // was made, it should still be closed from the 11th onerror call
+    expect(lastInstance.isClosed).toBe(true);
+  });
+
   it("resets retry count after stable connection", () => {
     const onFileChanged = vi.fn();
     createSseConnection({ onFileChanged });

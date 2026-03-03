@@ -149,12 +149,12 @@
     th,
     td {
       padding: 6px 13px;
-      border: 1px solid #d1d9e0;
+      border: 1px solid var(--border);
     }
 
     tr {
       background-color: var(--card);
-      border-top: 1px solid #d1d9e0;
+      border-top: 1px solid var(--border);
     }
   }
 

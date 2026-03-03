@@ -25,6 +25,7 @@ function DirectoryItem({
     <li class={depth === 0 ? "px-2 lg:px-5" : ""}>
       <button
         type="button"
+        aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
         class="flex items-center gap-x-3 w-full py-2 px-3 text-left text-sm text-sidebar-foreground hover:bg-sidebar-accent rounded-lg overflow-hidden"
       >
