@@ -1,7 +1,5 @@
-import { basename, normalize, resolve } from "node:path";
+import { normalize, resolve } from "node:path";
 import { Hono } from "hono";
-import { Breadcrumb } from "../components/layout/breadcrumb.js";
-import { FileTreeItems } from "../components/navigation/file-tree-items.js";
 import { renderMarkdown } from "../markdown/renderer.js";
 import type { FileTreeCache } from "../utils/file-tree-cache.js";
 import { logger } from "../utils/logger.js";
@@ -70,38 +68,6 @@ export function createApiRoutes(config: ApiConfig): Hono {
       return c.text("Failed to read directory", 500);
     }
     return c.json(result.value);
-  });
-
-  app.get("/api/breadcrumb-html", (c) => {
-    if (config.mode === "file") {
-      return c.html("");
-    }
-
-    const relativePath = c.req.query("path") ?? "";
-    const dirTitle = basename(config.targetPath) || config.targetPath;
-    const fileTitle = basename(relativePath);
-
-    return c.html(
-      <Breadcrumb
-        items={[{ label: dirTitle, href: "/" }, { label: fileTitle }]}
-      />,
-    );
-  });
-
-  app.get("/api/tree-html", async (c) => {
-    if (config.mode === "file") {
-      return c.html("");
-    }
-
-    const currentPath = c.req.query("currentPath") || "";
-    const result = await config.treeCache.get();
-    if (!result.ok) {
-      logger.error("Failed to render tree HTML:", result.error);
-      return c.text("Failed to read directory", 500);
-    }
-    return c.html(
-      <FileTreeItems nodes={result.value} currentPath={currentPath} />,
-    );
   });
 
   return app;

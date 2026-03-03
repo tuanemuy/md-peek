@@ -5,18 +5,24 @@ type SidebarProps = {
   readonly title: string;
   readonly tree: readonly FileTreeNode[];
   readonly currentPath: string;
+  readonly onClose?: () => void;
 };
 
-export function Sidebar({ title, tree, currentPath }: SidebarProps) {
+export function Sidebar({ title, tree, currentPath, onClose }: SidebarProps) {
   return (
     <>
-      {/* Overlay for mobile sidebar */}
-      <div id="sidebar-overlay" class="fixed inset-0 z-50 bg-black/50 hidden" />
+      {/* Overlay for mobile sidebar — visibility driven by body[data-sidebar-open] via CSS */}
+      <div
+        role="none"
+        id="sidebar-overlay"
+        class="fixed inset-0 z-50 bg-black/50 hidden"
+        onClick={onClose}
+      />
 
-      {/* Sidebar */}
+      {/* Sidebar — translate driven by body[data-sidebar-open] via CSS */}
       <aside
         id="sidebar"
-        class="fixed inset-y-0 start-0 z-60 w-72 lg:w-auto overflow-hidden bg-sidebar border-e border-sidebar-border -translate-x-full transition-transform duration-300"
+        class="fixed inset-y-0 start-0 z-60 w-72 lg:w-auto overflow-hidden bg-sidebar border-e border-sidebar-border -translate-x-full"
       >
         <div class="relative flex flex-col h-full max-h-full pt-3">
           <header class="h-11.5 ps-5 pe-2 lg:ps-8 flex items-center">

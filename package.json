@@ -55,6 +55,8 @@
     "markdown-it": "^14.1.1",
     "markdown-it-async": "^2.2.0",
     "picocolors": "^1.1.1",
+    "preact": "^10.28.4",
+    "preact-render-to-string": "^6.6.6",
     "shiki": "^4.0.1"
   },
   "devDependencies": {

@@ -1,8 +1,12 @@
 import { basename, normalize, resolve } from "node:path";
 import { Hono } from "hono";
+import { MainContent } from "../components/layout/main-content.js";
+import { MarkdownContent } from "../components/layout/markdown-content.js";
+import { PageHeader } from "../components/layout/page-header.js";
+import { Sidebar } from "../components/navigation/sidebar.js";
 import type { ResolvedStyles } from "../config/styles.js";
 import { renderMarkdown } from "../markdown/renderer.js";
-import { DirectoryViewPage, FilePreviewPage } from "../pages/index.js";
+import { Document, renderDocument } from "../renderer/document.js";
 import type { FileTreeNode } from "../utils/file-tree.js";
 import type { FileTreeCache } from "../utils/file-tree-cache.js";
 import { logger } from "../utils/logger.js";
@@ -20,6 +24,43 @@ function findFirstFile(
     }
   }
   return undefined;
+}
+
+function renderDirectoryView(params: {
+  readonly dirTitle: string;
+  readonly fileTitle: string;
+  readonly currentPath: string;
+  readonly html: string;
+  readonly tree: readonly FileTreeNode[];
+  readonly styles: ResolvedStyles;
+}): string {
+  const { dirTitle, fileTitle, currentPath, html, tree, styles } = params;
+  return renderDocument(
+    <Document
+      title={fileTitle}
+      styles={styles}
+      initialState={{
+        mode: "directory",
+        dirTitle,
+        currentPath,
+        content: html,
+        tree,
+      }}
+    >
+      <Sidebar title={dirTitle} tree={tree} currentPath={currentPath} />
+      <PageHeader
+        id="header-bar"
+        breadcrumbs={[{ label: dirTitle, href: "/" }, { label: fileTitle }]}
+        showSidebarToggle
+        externalLinkHref={`/${currentPath.split("/").map(encodeURIComponent).join("/")}`}
+      />
+      <MainContent class="px-5 sm:px-10 py-5 sm:py-10">
+        <div class="max-w-4xl mx-auto">
+          <MarkdownContent htmlContent={html} />
+        </div>
+      </MainContent>
+    </Document>,
+  );
 }
 
 export function createDirectoryRoutes(
@@ -50,16 +91,15 @@ export function createDirectoryRoutes(
 
     const html = await renderMarkdown(contentResult.value);
     const dirTitle = basename(dirPath) || dirPath;
-    const fileTitle = basename(firstFile.path);
     return c.html(
-      <DirectoryViewPage
-        dirTitle={dirTitle}
-        fileTitle={fileTitle}
-        htmlContent={html}
-        tree={treeResult.value}
-        currentPath={firstFile.path}
-        styles={styles}
-      />,
+      renderDirectoryView({
+        dirTitle,
+        fileTitle: basename(firstFile.path),
+        currentPath: firstFile.path,
+        html,
+        tree: treeResult.value,
+        styles,
+      }),
     );
   });
 
@@ -95,16 +135,15 @@ export function createDirectoryRoutes(
 
     const html = await renderMarkdown(contentResult.value);
     const dirTitle = basename(dirPath) || dirPath;
-    const fileTitle = basename(relativePath);
     return c.html(
-      <DirectoryViewPage
-        dirTitle={dirTitle}
-        fileTitle={fileTitle}
-        htmlContent={html}
-        tree={treeResult.value}
-        currentPath={relativePath}
-        styles={styles}
-      />,
+      renderDirectoryView({
+        dirTitle,
+        fileTitle: basename(relativePath),
+        currentPath: relativePath,
+        html,
+        tree: treeResult.value,
+        styles,
+      }),
     );
   });
 
@@ -130,7 +169,19 @@ export function createDirectoryRoutes(
     const html = await renderMarkdown(result.value);
     const fileTitle = basename(relativePath);
     return c.html(
-      <FilePreviewPage title={fileTitle} htmlContent={html} styles={styles} />,
+      renderDocument(
+        <Document
+          title={fileTitle}
+          styles={styles}
+          initialState={{ mode: "file", content: html }}
+        >
+          <main class="px-2 sm:px-5 py-5 sm:py-15">
+            <div class="max-w-4xl mx-auto">
+              <MarkdownContent htmlContent={html} />
+            </div>
+          </main>
+        </Document>,
+      ),
     );
   });
 

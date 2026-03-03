@@ -1,4 +1,4 @@
-import type { Child } from "hono/jsx";
+import type { ComponentChildren } from "preact";
 
 export type IconProps = {
   readonly id?: string;
@@ -7,7 +7,7 @@ export type IconProps = {
 };
 
 type SvgBaseProps = IconProps & {
-  readonly children: Child;
+  readonly children: ComponentChildren;
   readonly width?: string | number;
   readonly height?: string | number;
   readonly viewBox?: string;

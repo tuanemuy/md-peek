@@ -1,7 +1,7 @@
-import type { Child } from "hono/jsx";
+import type { ComponentChildren } from "preact";
 
 type ContentCardProps = {
-  readonly children: Child;
+  readonly children: ComponentChildren;
 };
 
 export function ContentCard({ children }: ContentCardProps) {

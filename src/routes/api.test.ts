@@ -88,33 +88,6 @@ describe("api routes - directory mode", () => {
     expect(data.some((n) => n.name === "readme.md")).toBe(true);
   });
 
-  it("GET /api/tree-html returns rendered HTML", async () => {
-    const treeCache = createFileTreeCache(testDir);
-    const app = createApiRoutes({
-      mode: "directory",
-      targetPath: testDir,
-      treeCache,
-    });
-    const res = await app.request("/api/tree-html");
-    expect(res.status).toBe(200);
-    const html = await res.text();
-    expect(html).toContain("readme.md");
-    expect(html).toContain("<li");
-  });
-
-  it("GET /api/tree-html highlights current path", async () => {
-    const treeCache = createFileTreeCache(testDir);
-    const app = createApiRoutes({
-      mode: "directory",
-      targetPath: testDir,
-      treeCache,
-    });
-    const res = await app.request("/api/tree-html?currentPath=readme.md");
-    expect(res.status).toBe(200);
-    const html = await res.text();
-    expect(html).toContain("bg-sidebar-accent");
-  });
-
   it("GET /api/content with path traversal returns 403", async () => {
     const treeCache = createFileTreeCache(testDir);
     const app = createApiRoutes({
@@ -138,14 +111,6 @@ describe("api routes - file mode edge cases", () => {
     const text = await res.text();
     expect(text).toBe("Failed to read file");
   });
-
-  it("GET /api/tree-html returns 200 with empty body in file mode", async () => {
-    const app = createApiRoutes({ mode: "file", targetPath: testFile });
-    const res = await app.request("/api/tree-html");
-    expect(res.status).toBe(200);
-    const html = await res.text();
-    expect(html).toBe("");
-  });
 });
 
 describe("api routes - tree error handling", () => {
@@ -164,18 +129,6 @@ describe("api routes - tree error handling", () => {
       treeCache: failingTreeCache,
     });
     const res = await app.request("/api/tree");
-    expect(res.status).toBe(500);
-    const text = await res.text();
-    expect(text).toBe("Failed to read directory");
-  });
-
-  it("GET /api/tree-html returns 500 when treeCache fails", async () => {
-    const app = createApiRoutes({
-      mode: "directory",
-      targetPath: testDir,
-      treeCache: failingTreeCache,
-    });
-    const res = await app.request("/api/tree-html");
     expect(res.status).toBe(500);
     const text = await res.text();
     expect(text).toBe("Failed to read directory");

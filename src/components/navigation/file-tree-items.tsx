@@ -1,3 +1,4 @@
+import { useState } from "preact/hooks";
 import type { FileTreeNode } from "../../utils/file-tree.js";
 import { ChevronDownIcon, FileIcon, FolderIcon } from "../icons/index.js";
 
@@ -9,6 +10,45 @@ type FileTreeItemsProps = {
   readonly depth?: number;
 };
 
+function DirectoryItem({
+  node,
+  currentPath,
+  depth,
+}: {
+  readonly node: FileTreeNode;
+  readonly currentPath?: string;
+  readonly depth: number;
+}) {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <li class={depth === 0 ? "px-2 lg:px-5" : ""}>
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        class="flex items-center gap-x-3 w-full py-2 px-3 text-left text-sm text-sidebar-foreground hover:bg-sidebar-accent rounded-lg overflow-hidden"
+      >
+        <FolderIcon class="shrink-0 size-4" />
+        <span class="min-w-0 truncate">{node.name}</span>
+        <ChevronDownIcon
+          class={`${open ? "" : "-rotate-180 "}shrink-0 size-3.5 ms-auto transition-transform`}
+        />
+      </button>
+      {open && (
+        <ul class="ps-7 mt-1 flex flex-col gap-y-1 relative before:absolute before:top-0 before:start-[1.125rem] before:w-px before:h-full before:bg-sidebar-border">
+          {node.children && depth < MAX_DEPTH ? (
+            <FileTreeItems
+              nodes={node.children}
+              currentPath={currentPath}
+              depth={depth + 1}
+            />
+          ) : null}
+        </ul>
+      )}
+    </li>
+  );
+}
+
 export function FileTreeItems({
   nodes,
   currentPath,
@@ -19,32 +59,12 @@ export function FileTreeItems({
       {nodes.map((node) => {
         if (node.type === "directory") {
           return (
-            <li key={node.path} class={depth === 0 ? "px-2 lg:px-5" : ""}>
-              <button
-                type="button"
-                data-tree-toggle
-                class="flex items-center gap-x-3 w-full py-2 px-3 text-left text-sm text-sidebar-foreground hover:bg-sidebar-accent rounded-lg overflow-hidden"
-              >
-                <FolderIcon class="shrink-0 size-4" />
-                <span class="min-w-0 truncate">{node.name}</span>
-                <ChevronDownIcon
-                  data-chevron
-                  class="-rotate-180 shrink-0 size-3.5 ms-auto transition-transform"
-                />
-              </button>
-              <ul
-                data-tree-content
-                class="ps-7 mt-1 flex flex-col gap-y-1 relative before:absolute before:top-0 before:start-[1.125rem] before:w-px before:h-full before:bg-sidebar-border"
-              >
-                {node.children && depth < MAX_DEPTH ? (
-                  <FileTreeItems
-                    nodes={node.children}
-                    currentPath={currentPath}
-                    depth={depth + 1}
-                  />
-                ) : null}
-              </ul>
-            </li>
+            <DirectoryItem
+              key={node.path}
+              node={node}
+              currentPath={currentPath}
+              depth={depth}
+            />
           );
         }
 

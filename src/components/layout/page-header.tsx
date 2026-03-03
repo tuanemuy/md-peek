@@ -9,6 +9,7 @@ type PageHeaderProps = {
   readonly id?: string;
   readonly breadcrumbs: readonly BreadcrumbItem[];
   readonly showSidebarToggle?: boolean;
+  readonly onToggleSidebar?: () => void;
   readonly externalLinkHref?: string;
 };
 
@@ -16,6 +17,7 @@ export function PageHeader({
   id,
   breadcrumbs,
   showSidebarToggle,
+  onToggleSidebar,
   externalLinkHref,
 }: PageHeaderProps) {
   return (
@@ -29,8 +31,10 @@ export function PageHeader({
             <button
               type="button"
               id="sidebar-toggle"
+              onClick={onToggleSidebar}
               class="shrink-0 w-7 h-7 inline-flex justify-center items-center rounded-lg text-muted-foreground hover:bg-sidebar-accent cursor-pointer"
             >
+              {/* Icon visibility driven by body[data-sidebar-open] via CSS */}
               <SidebarOpenIcon class="shrink-0 size-4" id="icon-sidebar-open" />
               <SidebarCloseIcon
                 class="shrink-0 size-4 hidden"

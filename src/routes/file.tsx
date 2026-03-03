@@ -1,8 +1,9 @@
 import { basename } from "node:path";
 import { Hono } from "hono";
+import { MarkdownContent } from "../components/layout/markdown-content.js";
 import type { ResolvedStyles } from "../config/styles.js";
 import { renderMarkdown } from "../markdown/renderer.js";
-import { FilePreviewPage } from "../pages/index.js";
+import { Document, renderDocument } from "../renderer/document.js";
 import { logger } from "../utils/logger.js";
 import { readTextFile } from "../utils/read-text-file.js";
 
@@ -21,7 +22,19 @@ export function createFileRoutes(
     const html = await renderMarkdown(result.value);
     const title = basename(filePath);
     return c.html(
-      <FilePreviewPage title={title} htmlContent={html} styles={styles} />,
+      renderDocument(
+        <Document
+          title={title}
+          styles={styles}
+          initialState={{ mode: "file", content: html }}
+        >
+          <main class="px-2 sm:px-5 py-5 sm:py-15">
+            <div class="max-w-4xl mx-auto">
+              <MarkdownContent htmlContent={html} />
+            </div>
+          </main>
+        </Document>,
+      ),
     );
   });
 

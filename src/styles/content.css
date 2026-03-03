@@ -76,6 +76,10 @@
     margin-top: 0.25em;
   }
 
+  .task-list-container {
+    list-style: none;
+  }
+
   blockquote {
     margin: 0 0 16px 0;
     padding: 0 1em;

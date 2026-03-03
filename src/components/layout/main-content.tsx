@@ -1,8 +1,8 @@
-import type { Child } from "hono/jsx";
+import type { ComponentChildren } from "preact";
 
 type MainContentProps = {
   readonly class?: string;
-  readonly children: Child;
+  readonly children: ComponentChildren;
 };
 
 export function MainContent({ class: className, children }: MainContentProps) {

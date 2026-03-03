@@ -65,6 +65,28 @@
   --scrollbar-thumb: #dedcd550;
 }
 
+/* Sidebar transition (uses CSS translate property for Tailwind v4 compat) */
+#sidebar {
+  transition: translate 300ms;
+}
+
+/* Sidebar open state — all screen sizes */
+body[data-sidebar-open] #sidebar {
+  translate: 0;
+}
+
+body[data-sidebar-open] #sidebar-overlay {
+  display: block;
+}
+
+body[data-sidebar-open] #icon-sidebar-open {
+  display: none;
+}
+
+body[data-sidebar-open] #icon-sidebar-close {
+  display: inline;
+}
+
 @media (min-width: 1024px) {
   #sidebar {
     width: var(--sidebar-width, 18rem);
@@ -78,17 +100,15 @@
     transition: margin 300ms;
   }
 
-  body[data-sidebar-open] {
-    #sidebar {
-      transform: translateX(0);
-    }
+  body[data-sidebar-open] #sidebar-overlay {
+    display: none;
+  }
 
-    #header-bar {
-      margin-inline-start: var(--sidebar-width, 18rem);
-    }
+  body[data-sidebar-open] #header-bar {
+    margin-inline-start: var(--sidebar-width, 18rem);
+  }
 
-    #main-content {
-      margin-inline-start: var(--sidebar-width, 18rem);
-    }
+  body[data-sidebar-open] #main-content {
+    margin-inline-start: var(--sidebar-width, 18rem);
   }
 }
