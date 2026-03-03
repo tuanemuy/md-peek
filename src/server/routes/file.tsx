@@ -1,11 +1,11 @@
 import { basename } from "node:path";
 import { Hono } from "hono";
-import { MarkdownContent } from "../components/layout/markdown-content.js";
-import type { ResolvedStyles } from "../config/styles.js";
-import { renderMarkdown } from "../markdown/renderer.js";
+import { MarkdownContent } from "../../components/layout/markdown-content.js";
+import { logger } from "../../lib/logger.js";
+import { renderMarkdown } from "../../lib/markdown.js";
+import { readTextFile } from "../../lib/read-text-file.js";
+import type { ResolvedStyles } from "../../lib/styles.js";
 import { Document, renderDocument } from "../renderer/document.js";
-import { logger } from "../utils/logger.js";
-import { readTextFile } from "../utils/read-text-file.js";
 
 export function createFileRoutes(
   filePath: string,

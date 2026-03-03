@@ -1,8 +1,8 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { resolveStyles } from "../config/styles.js";
-import { initMarkdown } from "../markdown/renderer.js";
+import { initMarkdown } from "../../lib/markdown.js";
+import { resolveStyles } from "../../lib/styles.js";
 import { createFileRoutes } from "./file.js";
 
 const testDir = join(import.meta.dirname, "__test_fixture__");

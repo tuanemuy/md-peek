@@ -1,8 +1,8 @@
 import { readFile } from "node:fs/promises";
-import { type TypedError, typedError } from "../types/error.js";
-import type { Result } from "../types/result.js";
-import { safe } from "../types/result.js";
-import { isNodeError } from "./error.js";
+import { type TypedError, typedError } from "../core/error.js";
+import type { Result } from "../core/result.js";
+import { safe } from "../core/result.js";
+import { isNodeError } from "./node-error.js";
 
 export type FileNotFoundError = TypedError<"file-not-found", { path: string }>;
 export type FileReadError = TypedError<"read-error", { path: string }>;

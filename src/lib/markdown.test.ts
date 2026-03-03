@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { initMarkdown, renderMarkdown } from "./renderer.js";
+import { initMarkdown, renderMarkdown } from "./markdown.js";
 
 describe("initMarkdown guard", () => {
   it("throws when renderMarkdown is called before initMarkdown", async () => {

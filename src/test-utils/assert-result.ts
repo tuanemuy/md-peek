@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import type { Result } from "../types/result.js";
+import type { Result } from "../core/result.js";
 
 export function assertOk<T, E>(result: Result<T, E>): T {
   expect(result.ok).toBe(true);

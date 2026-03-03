@@ -1,8 +1,8 @@
 import { useEffect } from "preact/hooks";
-import type { FileTreeNode } from "../utils/file-tree.js";
-import { fetchContent, fetchTree } from "./api-client.js";
-import { normalizePath } from "./path-utils.js";
-import { createSseConnection } from "./sse.js";
+import type { FileTreeNode } from "../../core/file-tree.js";
+import { fetchContent, fetchTree } from "../lib/api-client.js";
+import { normalizePath } from "../lib/path-utils.js";
+import { createSseConnection } from "../lib/sse.js";
 
 /**
  * SSE live-update hook.

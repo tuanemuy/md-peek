@@ -1,9 +1,9 @@
 node_modules
 coverage
 dist
-src/renderer/global.css
-src/renderer/client-bundle.js
-src/renderer/favicon.js
+src/server/renderer/global.css
+src/server/renderer/client-bundle.js
+src/server/renderer/favicon.js
 
 .direnv
 .env

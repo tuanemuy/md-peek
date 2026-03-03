@@ -1,7 +1,7 @@
 import type { ComponentChildren, VNode } from "preact";
 import renderToString from "preact-render-to-string";
-import type { ResolvedStyles } from "../config/styles.js";
-import type { InitialState } from "../types/initial-state.js";
+import type { InitialState } from "../../core/initial-state.js";
+import type { ResolvedStyles } from "../../lib/styles.js";
 import { clientBundle } from "./client-bundle.js";
 import { faviconBase64 } from "./favicon.js";
 import globalCss from "./global.css";

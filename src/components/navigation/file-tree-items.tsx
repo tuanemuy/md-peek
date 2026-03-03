@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import type { FileTreeNode } from "../../utils/file-tree.js";
+import type { FileTreeNode } from "../../core/file-tree.js";
 import { ChevronDownIcon, FileIcon, FolderIcon } from "../icons/index.js";
 
 const MAX_DEPTH = 20;

@@ -1,10 +1,10 @@
 import { normalize, resolve } from "node:path";
 import { Hono } from "hono";
-import { renderMarkdown } from "../markdown/renderer.js";
-import type { FileTreeCache } from "../utils/file-tree-cache.js";
-import { logger } from "../utils/logger.js";
-import { isWithinBase } from "../utils/path.js";
-import { readTextFile } from "../utils/read-text-file.js";
+import { isWithinBase } from "../../core/path.js";
+import type { FileTreeCache } from "../../lib/file-tree-cache.js";
+import { logger } from "../../lib/logger.js";
+import { renderMarkdown } from "../../lib/markdown.js";
+import { readTextFile } from "../../lib/read-text-file.js";
 
 type FileApiConfig = {
   readonly mode: "file";

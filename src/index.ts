@@ -7,11 +7,11 @@ import { resolve } from "node:path";
 import { cancel, intro, log, outro, spinner } from "@clack/prompts";
 import { cli, define } from "gunshi";
 import pc from "picocolors";
-import { resolveStyles } from "./config/styles.js";
-import { initMarkdown } from "./markdown/renderer.js";
-import { startServer } from "./server.js";
-import { isNodeError } from "./utils/error.js";
-import { logger } from "./utils/logger.js";
+import { logger } from "./lib/logger.js";
+import { initMarkdown } from "./lib/markdown.js";
+import { isNodeError } from "./lib/node-error.js";
+import { resolveStyles } from "./lib/styles.js";
+import { startServer } from "./server/index.js";
 
 const require = createRequire(import.meta.url);
 const pkg = require("../package.json");

@@ -1,7 +1,7 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { createFileWatcher } from "./index.js";
+import { createFileWatcher } from "./watcher.js";
 
 const testDir = join(import.meta.dirname, "__test_fixture_watcher__");
 const testFile = join(testDir, "test.md");

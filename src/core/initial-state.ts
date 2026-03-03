@@ -1,4 +1,4 @@
-import type { FileTreeNode } from "../utils/file-tree.js";
+import type { FileTreeNode } from "./file-tree.js";
 
 export type DirectoryInitialState = {
   readonly mode: "directory";

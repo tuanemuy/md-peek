@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "preact/hooks";
-import { fetchContent } from "./api-client.js";
-import { getFileNameFromPath } from "./path-utils.js";
+import { fetchContent } from "../lib/api-client.js";
+import { getFileNameFromPath } from "../lib/path-utils.js";
 
 /**
  * SPA navigation hook for directory mode.

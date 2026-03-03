@@ -1,4 +1,4 @@
-import type { FileTreeNode } from "../../utils/file-tree.js";
+import type { FileTreeNode } from "../../core/file-tree.js";
 import { FileTree } from "./file-tree.js";
 
 type SidebarProps = {

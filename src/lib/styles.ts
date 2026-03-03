@@ -1,10 +1,10 @@
 import { homedir } from "node:os";
 import { isAbsolute, resolve } from "node:path";
+import type { Result } from "../core/result.js";
+import { map, ok } from "../core/result.js";
 import contentCssDefault from "../styles/content.css";
-import type { Result } from "../types/result.js";
-import { map, ok } from "../types/result.js";
-import type { ReadTextFileError } from "../utils/read-text-file.js";
-import { readTextFile } from "../utils/read-text-file.js";
+import type { ReadTextFileError } from "./read-text-file.js";
+import { readTextFile } from "./read-text-file.js";
 
 export type ResolvedStyles = {
   readonly contentCss: string;

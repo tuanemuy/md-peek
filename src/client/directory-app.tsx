@@ -3,11 +3,11 @@ import { MainContent } from "../components/layout/main-content.js";
 import { MarkdownContent } from "../components/layout/markdown-content.js";
 import { PageHeader } from "../components/layout/page-header.js";
 import { Sidebar } from "../components/navigation/sidebar.js";
-import type { FileTreeNode } from "../utils/file-tree.js";
-import { getFileNameFromPath } from "./path-utils.js";
-import { useNavigation } from "./use-navigation.js";
-import { useSidebar } from "./use-sidebar.js";
-import { useSseUpdates } from "./use-sse-updates.js";
+import type { FileTreeNode } from "../core/file-tree.js";
+import { useNavigation } from "./hooks/use-navigation.js";
+import { useSidebar } from "./hooks/use-sidebar.js";
+import { useSseUpdates } from "./hooks/use-sse-updates.js";
+import { getFileNameFromPath } from "./lib/path-utils.js";
 
 type DirectoryAppProps = {
   readonly dirTitle: string;

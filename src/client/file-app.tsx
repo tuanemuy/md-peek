@@ -1,6 +1,6 @@
 import { useState } from "preact/hooks";
 import { MarkdownContent } from "../components/layout/markdown-content.js";
-import { useSseUpdates } from "./use-sse-updates.js";
+import { useSseUpdates } from "./hooks/use-sse-updates.js";
 
 type FileAppProps = {
   readonly content: string;

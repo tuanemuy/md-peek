@@ -1,17 +1,17 @@
 import { basename, normalize, resolve } from "node:path";
 import { Hono } from "hono";
-import { MainContent } from "../components/layout/main-content.js";
-import { MarkdownContent } from "../components/layout/markdown-content.js";
-import { PageHeader } from "../components/layout/page-header.js";
-import { Sidebar } from "../components/navigation/sidebar.js";
-import type { ResolvedStyles } from "../config/styles.js";
-import { renderMarkdown } from "../markdown/renderer.js";
+import { MainContent } from "../../components/layout/main-content.js";
+import { MarkdownContent } from "../../components/layout/markdown-content.js";
+import { PageHeader } from "../../components/layout/page-header.js";
+import { Sidebar } from "../../components/navigation/sidebar.js";
+import type { FileTreeNode } from "../../core/file-tree.js";
+import { isWithinBase } from "../../core/path.js";
+import type { FileTreeCache } from "../../lib/file-tree-cache.js";
+import { logger } from "../../lib/logger.js";
+import { renderMarkdown } from "../../lib/markdown.js";
+import { readTextFile } from "../../lib/read-text-file.js";
+import type { ResolvedStyles } from "../../lib/styles.js";
 import { Document, renderDocument } from "../renderer/document.js";
-import type { FileTreeNode } from "../utils/file-tree.js";
-import type { FileTreeCache } from "../utils/file-tree-cache.js";
-import { logger } from "../utils/logger.js";
-import { isWithinBase } from "../utils/path.js";
-import { readTextFile } from "../utils/read-text-file.js";
 
 function findFirstFile(
   nodes: readonly FileTreeNode[],

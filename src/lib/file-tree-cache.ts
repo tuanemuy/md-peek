@@ -1,5 +1,6 @@
-import type { Result } from "../types/result.js";
-import type { BuildTreeError, FileTreeNode } from "./file-tree.js";
+import type { FileTreeNode } from "../core/file-tree.js";
+import type { Result } from "../core/result.js";
+import type { BuildTreeError } from "./file-tree.js";
 import { buildFileTree } from "./file-tree.js";
 
 export type FileTreeCache = {

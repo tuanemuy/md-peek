@@ -2,18 +2,12 @@ import type { Dirent } from "node:fs";
 import { readdir, realpath } from "node:fs/promises";
 import { join, relative } from "node:path";
 import ignore, { type Ignore } from "ignore";
-import { type TypedError, typedError } from "../types/error.js";
-import type { Result } from "../types/result.js";
-import { err, ok } from "../types/result.js";
+import { type TypedError, typedError } from "../core/error.js";
+import type { FileTreeNode } from "../core/file-tree.js";
+import type { Result } from "../core/result.js";
+import { err, ok } from "../core/result.js";
 import { logger } from "./logger.js";
 import { readTextFile } from "./read-text-file.js";
-
-export type FileTreeNode = {
-  readonly name: string;
-  readonly path: string;
-  readonly type: "file" | "directory";
-  readonly children?: readonly FileTreeNode[];
-};
 
 const DEFAULT_IGNORE_PATTERNS = [
   ".git/",

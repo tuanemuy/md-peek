@@ -1,6 +1,10 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import type { ResolvedStyles } from "./config/styles.js";
+import type { FileTreeCache } from "../lib/file-tree-cache.js";
+import { createFileTreeCache } from "../lib/file-tree-cache.js";
+import type { ResolvedStyles } from "../lib/styles.js";
+import type { FileWatcherHandle } from "../lib/watcher.js";
+import { createFileWatcher } from "../lib/watcher.js";
 import { faviconBase64 } from "./renderer/favicon.js";
 import type { ApiConfig } from "./routes/api.js";
 import { createApiRoutes } from "./routes/api.js";
@@ -8,11 +12,6 @@ import { createDirectoryRoutes } from "./routes/directory.js";
 import { createFileRoutes } from "./routes/file.js";
 import type { SseManager } from "./routes/sse.js";
 import { createSseManager } from "./routes/sse.js";
-
-import type { FileTreeCache } from "./utils/file-tree-cache.js";
-import { createFileTreeCache } from "./utils/file-tree-cache.js";
-import type { FileWatcherHandle } from "./watcher/index.js";
-import { createFileWatcher } from "./watcher/index.js";
 
 type BaseServerConfig = {
   readonly targetPath: string;

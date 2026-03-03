@@ -1,10 +1,10 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { initMarkdown } from "../markdown/renderer.js";
-import { typedError } from "../types/error.js";
-import { err } from "../types/result.js";
-import { createFileTreeCache } from "../utils/file-tree-cache.js";
+import { typedError } from "../../core/error.js";
+import { err } from "../../core/result.js";
+import { createFileTreeCache } from "../../lib/file-tree-cache.js";
+import { initMarkdown } from "../../lib/markdown.js";
 import { createApiRoutes } from "./api.js";
 
 const testDir = join(import.meta.dirname, "__test_fixture_api__");

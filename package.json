@@ -10,11 +10,11 @@
     "dist"
   ],
   "scripts": {
-    "dev:css": "postcss src/styles/global.css -o src/renderer/global.css --watch",
+    "dev:css": "postcss src/styles/global.css -o src/server/renderer/global.css --watch",
     "dev:server": "tsx --import ./src/loaders/css.mjs src/index.ts",
     "dev": "pnpm dev:css & trap 'kill %1 2>/dev/null' EXIT; pnpm dev:server",
-    "pretest": "postcss src/styles/global.css -o src/renderer/global.css && node scripts/build-client.mjs && node scripts/build-favicon.mjs",
-    "build:css": "postcss src/styles/global.css -o src/renderer/global.css --env production",
+    "pretest": "postcss src/styles/global.css -o src/server/renderer/global.css && node scripts/build-client.mjs && node scripts/build-favicon.mjs",
+    "build:css": "postcss src/styles/global.css -o src/server/renderer/global.css --env production",
     "build:client": "node scripts/build-client.mjs",
     "build:favicon": "node scripts/build-favicon.mjs",
     "build": "pnpm build:css && pnpm build:client && pnpm build:favicon && tsdown",

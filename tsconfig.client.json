@@ -21,8 +21,9 @@
   "include": [
     "src/client/**/*",
     "src/components/**/*",
-    "src/types/initial-state.ts",
-    "src/utils/file-tree.ts",
-    "src/utils/logger.ts"
+    "src/core/file-tree.ts",
+    "src/core/initial-state.ts",
+    "src/core/css.d.ts",
+    "src/lib/logger.ts"
   ]
 }
