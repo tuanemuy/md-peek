@@ -3,6 +3,7 @@ coverage
 dist
 src/renderer/global.css
 src/renderer/client-bundle.js
+src/renderer/favicon.js
 
 .direnv
 .env

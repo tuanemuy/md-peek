@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import type { ResolvedStyles } from "./config/styles.js";
+import { faviconBase64 } from "./renderer/favicon.js";
 import type { ApiConfig } from "./routes/api.js";
 import { createApiRoutes } from "./routes/api.js";
 import { createDirectoryRoutes } from "./routes/directory.js";
@@ -47,7 +48,16 @@ type AppContext =
 function createApp(ctx: AppContext, sse: SseManager): Hono {
   const app = new Hono();
 
-  app.get("/favicon.ico", (c) => c.body(null, 204));
+  app.get("/favicon.ico", (c) => {
+    if (!faviconBase64) {
+      return c.body(null, 204);
+    }
+    const buf = Buffer.from(faviconBase64, "base64");
+    return c.body(buf, 200, {
+      "Content-Type": "image/x-icon",
+      "Cache-Control": "public, max-age=86400",
+    });
+  });
   app.route("/", sse.app);
 
   if (ctx.mode === "file") {
