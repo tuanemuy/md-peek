@@ -66,7 +66,7 @@
     "@tailwindcss/postcss": "^4.2.1",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^25.3.3",
-    "@typescript/native-preview": "7.0.0-dev.20260302.1",
+    "@typescript/native-preview": "7.0.0-dev.20260304.1",
     "esbuild": "^0.27.3",
     "postcss": "^8.5.6",
     "postcss-cli": "^11.0.1",
