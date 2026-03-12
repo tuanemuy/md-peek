@@ -1,5 +1,6 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import type { ContentType } from "../core/content-type.js";
 import type { FileTreeCache } from "../lib/file-tree-cache.js";
 import { createFileTreeCache } from "../lib/file-tree-cache.js";
 import type { ResolvedStyles } from "../lib/styles.js";
@@ -10,6 +11,7 @@ import type { ApiConfig } from "./routes/api.js";
 import { createApiRoutes } from "./routes/api.js";
 import { createDirectoryRoutes } from "./routes/directory.js";
 import { createFileRoutes } from "./routes/file.js";
+import { createHtmlFileRoutes } from "./routes/html-file.js";
 import type { SseManager } from "./routes/sse.js";
 import { createSseManager } from "./routes/sse.js";
 
@@ -21,7 +23,10 @@ type BaseServerConfig = {
 };
 
 export type ServerConfig =
-  | (BaseServerConfig & { readonly mode: "file" })
+  | (BaseServerConfig & {
+      readonly mode: "file";
+      readonly contentType: ContentType;
+    })
   | (BaseServerConfig & { readonly mode: "directory" });
 
 export type ServerInstance = {
@@ -36,6 +41,7 @@ type AppContext =
       readonly mode: "file";
       readonly targetPath: string;
       readonly styles: ResolvedStyles;
+      readonly contentType: ContentType;
     }
   | {
       readonly mode: "directory";
@@ -66,8 +72,13 @@ function createApp(ctx: AppContext, sse: SseManager): Hono {
     });
     app.route("/", apiRoutes);
 
-    const fileRoutes = createFileRoutes(ctx.targetPath, ctx.styles);
-    app.route("/", fileRoutes);
+    if (ctx.contentType === "html") {
+      const htmlFileRoutes = createHtmlFileRoutes(ctx.targetPath);
+      app.route("/", htmlFileRoutes);
+    } else {
+      const fileRoutes = createFileRoutes(ctx.targetPath, ctx.styles);
+      app.route("/", fileRoutes);
+    }
   } else {
     const apiConfig: ApiConfig = {
       mode: "directory",
@@ -120,6 +131,7 @@ export async function startServer(
           mode: "file",
           targetPath: config.targetPath,
           styles: config.styles,
+          contentType: config.contentType,
         };
 
   const app = createApp(ctx, sse);

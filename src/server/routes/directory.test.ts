@@ -13,6 +13,10 @@ beforeAll(async () => {
   mkdirSync(join(testDir, "docs"), { recursive: true });
   writeFileSync(join(testDir, "README.md"), "# README\n\nHello");
   writeFileSync(join(testDir, "docs", "guide.md"), "# Guide\n\nContent");
+  writeFileSync(
+    join(testDir, "page.html"),
+    "<h1>HTML Page</h1><p>Hello HTML</p>",
+  );
   await initMarkdown();
 });
 
@@ -146,7 +150,23 @@ describe("directory routes - catch-all path", () => {
     expect(res.status).toBe(404);
   });
 
-  it("GET /somefile.txt returns 404 for non-.md extension", async () => {
+  it("GET /page.html returns rendered page with iframe", async () => {
+    const result = await resolveStyles();
+    if (!result.ok) throw new Error("Failed to resolve styles");
+    const styles = result.value;
+    const treeCache = createFileTreeCache(testDir);
+    const app = createDirectoryRoutes(testDir, styles, treeCache);
+
+    const res = await app.request("/page.html");
+    expect(res.status).toBe(200);
+
+    const html = await res.text();
+    expect(html).toContain("<!DOCTYPE html>");
+    expect(html).toContain("iframe");
+    expect(html).toContain("/api/raw");
+  });
+
+  it("GET /somefile.txt returns 404 for unsupported extension", async () => {
     const result = await resolveStyles();
     if (!result.ok) throw new Error("Failed to resolve styles");
     const styles = result.value;
@@ -195,7 +215,23 @@ describe("directory routes - security", () => {
     expect(res.status).toBe(403);
   });
 
-  it("GET /view?path=docs returns 404 for directory path without .md extension", async () => {
+  it("GET /view?path=page.html returns page with iframe", async () => {
+    const result = await resolveStyles();
+    if (!result.ok) throw new Error("Failed to resolve styles");
+    const styles = result.value;
+    const treeCache = createFileTreeCache(testDir);
+    const app = createDirectoryRoutes(testDir, styles, treeCache);
+
+    const res = await app.request("/view?path=page.html");
+    expect(res.status).toBe(200);
+
+    const html = await res.text();
+    expect(html).toContain("<!DOCTYPE html>");
+    expect(html).toContain("iframe");
+    expect(html).toContain("page.html");
+  });
+
+  it("GET /view?path=docs returns 404 for directory path without supported extension", async () => {
     const result = await resolveStyles();
     if (!result.ok) throw new Error("Failed to resolve styles");
     const styles = result.value;

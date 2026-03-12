@@ -18,6 +18,7 @@ beforeAll(() => {
   writeFileSync(join(testDir, "docs", "overview.md"), "# Overview");
   writeFileSync(join(testDir, "docs", "setup.md"), "# Setup");
   writeFileSync(join(testDir, "guides", "intro.md"), "# Intro");
+  writeFileSync(join(testDir, "page.html"), "<h1>Page</h1>");
   writeFileSync(join(testDir, "notes.txt"), "not markdown");
   writeFileSync(join(testDir, ".git", "config"), "git config");
   writeFileSync(join(testDir, "node_modules", "pkg.md"), "# pkg");
@@ -51,13 +52,13 @@ describe("buildFileTree", () => {
     expect(allNames).not.toContain("node_modules");
   });
 
-  it("only includes .md files", async () => {
+  it("only includes supported files (.md, .html, .htm)", async () => {
     const result = await buildFileTree(testDir);
     const tree = assertOk(result);
     const allFiles = flattenFiles(tree);
 
     for (const f of allFiles) {
-      expect(f.name).toMatch(/\.md$/);
+      expect(f.name).toMatch(/\.(md|html|htm)$/);
     }
     expect(allFiles.some((f) => f.name === "notes.txt")).toBe(false);
   });

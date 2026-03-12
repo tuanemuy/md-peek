@@ -4,6 +4,8 @@ import { MainContent } from "../../components/layout/main-content.js";
 import { MarkdownContent } from "../../components/layout/markdown-content.js";
 import { PageHeader } from "../../components/layout/page-header.js";
 import { Sidebar } from "../../components/navigation/sidebar.js";
+import type { ContentType } from "../../core/content-type.js";
+import { getContentType } from "../../core/content-type.js";
 import type { FileTreeNode } from "../../core/file-tree.js";
 import { isWithinBase } from "../../core/path.js";
 import type { FileTreeCache } from "../../lib/file-tree-cache.js";
@@ -30,11 +32,13 @@ function renderDirectoryView(params: {
   readonly dirTitle: string;
   readonly fileTitle: string;
   readonly currentPath: string;
+  readonly contentType: ContentType;
   readonly html: string;
   readonly tree: readonly FileTreeNode[];
   readonly styles: ResolvedStyles;
 }): string {
-  const { dirTitle, fileTitle, currentPath, html, tree, styles } = params;
+  const { dirTitle, fileTitle, currentPath, contentType, html, tree, styles } =
+    params;
   return renderDocument(
     <Document
       title={fileTitle}
@@ -43,6 +47,7 @@ function renderDirectoryView(params: {
         mode: "directory",
         dirTitle,
         currentPath,
+        contentType,
         content: html,
         tree,
       }}
@@ -54,13 +59,44 @@ function renderDirectoryView(params: {
         showSidebarToggle
         externalLinkHref={`/${currentPath.split("/").map(encodeURIComponent).join("/")}`}
       />
-      <MainContent class="px-5 sm:px-10 py-5 sm:py-10">
-        <div class="max-w-4xl mx-auto">
-          <MarkdownContent htmlContent={html} />
-        </div>
-      </MainContent>
+      {contentType === "html" ? (
+        <MainContent>
+          <iframe
+            title={fileTitle}
+            src={`/api/raw?path=${encodeURIComponent(currentPath)}`}
+            style="border:none;width:100%;height:100%;position:absolute;top:0;left:0"
+          />
+        </MainContent>
+      ) : (
+        <MainContent class="px-5 sm:px-10 py-5 sm:py-10">
+          <div class="max-w-4xl mx-auto">
+            <MarkdownContent htmlContent={html} />
+          </div>
+        </MainContent>
+      )}
     </Document>,
   );
+}
+
+async function renderFileContent(
+  fullPath: string,
+  contentType: ContentType,
+): Promise<
+  { ok: true; html: string } | { ok: false; status: number; message: string }
+> {
+  const result = await readTextFile(fullPath);
+  if (!result.ok) {
+    if (result.error.type === "file-not-found") {
+      return { ok: false, status: 404, message: "File not found" };
+    }
+    logger.error("Failed to read file:", result.error);
+    return { ok: false, status: 500, message: "Internal server error" };
+  }
+
+  if (contentType === "html") {
+    return { ok: true, html: "" };
+  }
+  return { ok: true, html: await renderMarkdown(result.value) };
 }
 
 export function createDirectoryRoutes(
@@ -79,24 +115,24 @@ export function createDirectoryRoutes(
 
     const firstFile = findFirstFile(treeResult.value);
     if (!firstFile) {
-      return c.text("No markdown files found", 404);
+      return c.text("No supported files found", 404);
     }
 
+    const contentType = getContentType(firstFile.path) ?? "markdown";
     const fullPath = resolve(dirPath, normalize(firstFile.path));
-    const contentResult = await readTextFile(fullPath);
-    if (!contentResult.ok) {
-      logger.error("Failed to read file:", contentResult.error);
-      return c.text("Internal server error", 500);
+    const rendered = await renderFileContent(fullPath, contentType);
+    if (!rendered.ok) {
+      return c.text(rendered.message, rendered.status as 404 | 500);
     }
 
-    const html = await renderMarkdown(contentResult.value);
     const dirTitle = basename(dirPath) || dirPath;
     return c.html(
       renderDirectoryView({
         dirTitle,
         fileTitle: basename(firstFile.path),
         currentPath: firstFile.path,
-        html,
+        contentType,
+        html: rendered.html,
         tree: treeResult.value,
         styles,
       }),
@@ -114,17 +150,14 @@ export function createDirectoryRoutes(
       return c.text("Forbidden", 403);
     }
 
-    if (!relativePath.endsWith(".md")) {
+    const contentType = getContentType(relativePath);
+    if (!contentType) {
       return c.text("Not found", 404);
     }
 
-    const contentResult = await readTextFile(fullPath);
-    if (!contentResult.ok) {
-      if (contentResult.error.type === "file-not-found") {
-        return c.text("File not found", 404);
-      }
-      logger.error("Failed to render file:", contentResult.error);
-      return c.text("Internal server error", 500);
+    const rendered = await renderFileContent(fullPath, contentType);
+    if (!rendered.ok) {
+      return c.text(rendered.message, rendered.status as 404 | 500);
     }
 
     const treeResult = await treeCache.get();
@@ -133,14 +166,14 @@ export function createDirectoryRoutes(
       return c.text("Internal server error", 500);
     }
 
-    const html = await renderMarkdown(contentResult.value);
     const dirTitle = basename(dirPath) || dirPath;
     return c.html(
       renderDirectoryView({
         dirTitle,
         fileTitle: basename(relativePath),
         currentPath: relativePath,
-        html,
+        contentType,
+        html: rendered.html,
         tree: treeResult.value,
         styles,
       }),
@@ -153,33 +186,40 @@ export function createDirectoryRoutes(
     if (!isWithinBase(dirPath, fullPath)) {
       return c.text("Forbidden", 403);
     }
-    if (!relativePath.endsWith(".md")) {
+
+    const contentType = getContentType(relativePath);
+    if (!contentType) {
       return c.text("Not found", 404);
     }
 
-    const result = await readTextFile(fullPath);
-    if (!result.ok) {
-      if (result.error.type === "file-not-found") {
-        return c.text("File not found", 404);
-      }
-      logger.error("Failed to render file:", result.error);
-      return c.text("Internal server error", 500);
+    const rendered = await renderFileContent(fullPath, contentType);
+    if (!rendered.ok) {
+      return c.text(rendered.message, rendered.status as 404 | 500);
     }
 
-    const html = await renderMarkdown(result.value);
     const fileTitle = basename(relativePath);
     return c.html(
       renderDocument(
         <Document
           title={fileTitle}
           styles={styles}
-          initialState={{ mode: "file", content: html }}
+          initialState={{ mode: "file", content: rendered.html }}
         >
-          <main class="px-2 sm:px-5 py-5 sm:py-15">
-            <div class="max-w-4xl mx-auto">
-              <MarkdownContent htmlContent={html} />
-            </div>
-          </main>
+          {contentType === "html" ? (
+            <main>
+              <iframe
+                title={fileTitle}
+                src={`/api/raw?path=${encodeURIComponent(relativePath)}`}
+                style="border:none;width:100%;height:100%;position:absolute;top:0;left:0"
+              />
+            </main>
+          ) : (
+            <main class="px-2 sm:px-5 py-5 sm:py-15">
+              <div class="max-w-4xl mx-auto">
+                <MarkdownContent htmlContent={rendered.html} />
+              </div>
+            </main>
+          )}
         </Document>,
       ),
     );

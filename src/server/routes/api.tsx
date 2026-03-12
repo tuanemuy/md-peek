@@ -1,5 +1,6 @@
 import { normalize, resolve } from "node:path";
 import { Hono } from "hono";
+import { getContentType } from "../../core/content-type.js";
 import { isWithinBase } from "../../core/path.js";
 import type { FileTreeCache } from "../../lib/file-tree-cache.js";
 import { logger } from "../../lib/logger.js";
@@ -19,11 +20,19 @@ type DirectoryApiConfig = {
 
 export type ApiConfig = FileApiConfig | DirectoryApiConfig;
 
+function htmlIframeSnippet(rawUrl: string): string {
+  return `<iframe src="${rawUrl}" style="border:none;width:100%;height:100%;position:absolute;top:0;left:0"></iframe>`;
+}
+
 export function createApiRoutes(config: ApiConfig): Hono {
   const app = new Hono();
 
   app.get("/api/content", async (c) => {
     if (config.mode === "file") {
+      const contentType = getContentType(config.targetPath);
+      if (contentType === "html") {
+        return c.html(htmlIframeSnippet("/api/raw"));
+      }
       const result = await readTextFile(config.targetPath);
       if (!result.ok) {
         logger.error("Failed to read file:", result.error);
@@ -42,8 +51,15 @@ export function createApiRoutes(config: ApiConfig): Hono {
       return c.text("Forbidden", 403);
     }
 
-    if (!relativePath.endsWith(".md")) {
+    const contentType = getContentType(relativePath);
+    if (!contentType) {
       return c.text("Not found", 404);
+    }
+
+    if (contentType === "html") {
+      return c.html(
+        htmlIframeSnippet(`/api/raw?path=${encodeURIComponent(relativePath)}`),
+      );
     }
 
     const result = await readTextFile(fullPath);
@@ -55,6 +71,42 @@ export function createApiRoutes(config: ApiConfig): Hono {
       return c.text("Failed to read file", 500);
     }
     return c.html(await renderMarkdown(result.value));
+  });
+
+  app.get("/api/raw", async (c) => {
+    if (config.mode === "file") {
+      const result = await readTextFile(config.targetPath);
+      if (!result.ok) {
+        logger.error("Failed to read file:", result.error);
+        return c.text("Failed to read file", 500);
+      }
+      return c.html(result.value);
+    }
+
+    const relativePath = c.req.query("path");
+    if (!relativePath) {
+      return c.text("Missing path parameter", 400);
+    }
+
+    const fullPath = resolve(config.targetPath, normalize(relativePath));
+    if (!isWithinBase(config.targetPath, fullPath)) {
+      return c.text("Forbidden", 403);
+    }
+
+    const contentType = getContentType(relativePath);
+    if (contentType !== "html") {
+      return c.text("Not found", 404);
+    }
+
+    const result = await readTextFile(fullPath);
+    if (!result.ok) {
+      if (result.error.type === "file-not-found") {
+        return c.text("File not found", 404);
+      }
+      logger.error("Failed to read file:", result.error);
+      return c.text("Failed to read file", 500);
+    }
+    return c.html(result.value);
   });
 
   app.get("/api/tree", async (c) => {
