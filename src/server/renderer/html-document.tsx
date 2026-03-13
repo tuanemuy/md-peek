@@ -6,7 +6,42 @@ type HtmlDocumentProps = {
 };
 
 export function HtmlDocument({ title, rawContentUrl }: HtmlDocumentProps) {
-  const sseReloadScript = `(function(){var maxRetries=10,retryCount=0,initialDelay=1000,maxDelay=30000;function connect(){var es=new EventSource("/sse");es.addEventListener("file-changed",function(){var f=document.getElementById("content-frame");if(f&&f.contentWindow){f.contentWindow.location.reload()}});es.onerror=function(){es.close();retryCount++;if(retryCount>maxRetries)return;var delay=Math.min(initialDelay*Math.pow(2,retryCount-1),maxDelay);setTimeout(connect,delay)};setTimeout(function(){retryCount=0},5000)}connect()})()`;
+  const sseReloadScript = [
+    "(function () {",
+    "  var maxRetries = 10;",
+    "  var retryCount = 0;",
+    "  var initialDelay = 1000;",
+    "  var maxDelay = 30000;",
+    "",
+    "  function connect() {",
+    '    var es = new EventSource("/sse");',
+    "",
+    '    es.addEventListener("file-changed", function () {',
+    '      var f = document.getElementById("content-frame");',
+    "      if (f && f.contentWindow) {",
+    "        f.contentWindow.location.reload();",
+    "      }",
+    "    });",
+    "",
+    "    es.onerror = function () {",
+    "      es.close();",
+    "      retryCount++;",
+    "      if (retryCount > maxRetries) return;",
+    "      var delay = Math.min(",
+    "        initialDelay * Math.pow(2, retryCount - 1),",
+    "        maxDelay",
+    "      );",
+    "      setTimeout(connect, delay);",
+    "    };",
+    "",
+    "    setTimeout(function () {",
+    "      retryCount = 0;",
+    "    }, 5000);",
+    "  }",
+    "",
+    "  connect();",
+    "})()",
+  ].join("\n");
   return (
     <html lang="en">
       <head>
@@ -21,7 +56,12 @@ export function HtmlDocument({ title, rawContentUrl }: HtmlDocumentProps) {
         />
       </head>
       <body>
-        <iframe id="content-frame" title={title} src={rawContentUrl} />
+        <iframe
+          id="content-frame"
+          title={title}
+          src={rawContentUrl}
+          sandbox="allow-scripts"
+        />
         <script dangerouslySetInnerHTML={{ __html: sseReloadScript }} />
       </body>
     </html>

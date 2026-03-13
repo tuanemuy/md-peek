@@ -1,3 +1,4 @@
+import { constants } from "node:fs";
 import { access } from "node:fs/promises";
 import { basename, normalize, resolve } from "node:path";
 import { Hono } from "hono";
@@ -67,6 +68,7 @@ function renderDirectoryView(params: {
             title={fileTitle}
             src={`/api/raw?path=${encodeURIComponent(currentPath)}`}
             style={FULLSCREEN_IFRAME_STYLE}
+            sandbox="allow-scripts"
           />
         </MainContent>
       ) : (
@@ -88,10 +90,11 @@ async function renderFileContent(
 > {
   if (contentType === "html") {
     try {
-      await access(fullPath);
+      await access(fullPath, constants.R_OK);
     } catch {
       return { ok: false, status: 404, message: "File not found" };
     }
+    // HTML content is served via /api/raw iframe; no rendered HTML needed here
     return { ok: true, html: "" };
   }
 
@@ -125,7 +128,11 @@ export function createDirectoryRoutes(
       return c.text("No supported files found", 404);
     }
 
-    const contentType = getContentType(firstFile.path) ?? "markdown";
+    const contentType = getContentType(firstFile.path);
+    if (!contentType) {
+      logger.error("Unexpected unsupported file in tree:", firstFile.path);
+      return c.text("Internal server error", 500);
+    }
     const fullPath = resolve(dirPath, normalize(firstFile.path));
     const rendered = await renderFileContent(fullPath, contentType);
     if (!rendered.ok) {
@@ -218,6 +225,7 @@ export function createDirectoryRoutes(
                 title={fileTitle}
                 src={`/api/raw?path=${encodeURIComponent(relativePath)}`}
                 style={FULLSCREEN_IFRAME_STYLE}
+                sandbox="allow-scripts"
               />
             </main>
           ) : (

@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!testdata"]
+    "includes": ["**", "!testdata/**/*.html", "!testdata/**/*.htm"]
   },
   "formatter": {
     "enabled": true,

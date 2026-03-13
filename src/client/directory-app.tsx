@@ -42,7 +42,12 @@ export function DirectoryApp({
   useNavigation((path, html) => {
     currentPathRef.current = path;
     setCurrentPath(path);
-    setContentType(getContentType(path) ?? "markdown");
+    const ct = getContentType(path);
+    if (!ct) {
+      console.error(`Unexpected unsupported file type: ${path}`);
+      return;
+    }
+    setContentType(ct);
     setContent(html);
     setHtmlReloadKey(0);
   });
@@ -85,6 +90,7 @@ export function DirectoryApp({
             title={fileTitle}
             src={`/api/raw?path=${encodeURIComponent(currentPath)}`}
             style={FULLSCREEN_IFRAME_STYLE}
+            sandbox="allow-scripts"
           />
         </MainContent>
       ) : (

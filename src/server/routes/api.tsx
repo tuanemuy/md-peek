@@ -24,7 +24,12 @@ export type ApiConfig = FileApiConfig | DirectoryApiConfig;
 
 function htmlIframeSnippet(rawUrl: string): string {
   return renderToString(
-    <iframe src={rawUrl} style={FULLSCREEN_IFRAME_STYLE} title="content" />,
+    <iframe
+      src={rawUrl}
+      style={FULLSCREEN_IFRAME_STYLE}
+      title="content"
+      sandbox="allow-scripts"
+    />,
   );
 }
 
@@ -88,6 +93,8 @@ export function createApiRoutes(config: ApiConfig): Hono {
         logger.error("Failed to read file:", result.error);
         return c.text("Failed to read file", 500);
       }
+      c.header("X-Content-Type-Options", "nosniff");
+      c.header("Content-Security-Policy", "default-src 'self' 'unsafe-inline'");
       return c.html(result.value);
     }
 
@@ -114,6 +121,8 @@ export function createApiRoutes(config: ApiConfig): Hono {
       logger.error("Failed to read file:", result.error);
       return c.text("Failed to read file", 500);
     }
+    c.header("X-Content-Type-Options", "nosniff");
+    c.header("Content-Security-Policy", "default-src 'self' 'unsafe-inline'");
     return c.html(result.value);
   });
 

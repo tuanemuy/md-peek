@@ -11,7 +11,9 @@ import { getContentType } from "./core/content-type.js";
 import { logger } from "./lib/logger.js";
 import { initMarkdown } from "./lib/markdown.js";
 import { isNodeError } from "./lib/node-error.js";
+import type { ResolvedStyles } from "./lib/styles.js";
 import { resolveStyles } from "./lib/styles.js";
+import type { ServerConfig } from "./server/index.js";
 import { startServer } from "./server/index.js";
 
 const require = createRequire(import.meta.url);
@@ -104,19 +106,20 @@ $ peek README.md --css ./custom.css --no-open`,
       });
     }
 
-    const stylesResult = await resolveStyles(css);
-    if (!stylesResult.ok) {
-      s.stop("Failed to resolve styles");
-      const message =
-        stylesResult.error.type === "file-not-found"
-          ? `CSS file not found: ${stylesResult.error.path}`
-          : `Failed to read CSS file: ${stylesResult.error.path}`;
-      cancel(message);
-      process.exit(1);
-    }
-    const styles = stylesResult.value;
+    const styles: ResolvedStyles = isHtmlFileMode
+      ? { contentCss: "" }
+      : await resolveStyles(css).then((result) => {
+          if (result.ok) return result.value;
+          s.stop("Failed to resolve styles");
+          const message =
+            result.error.type === "file-not-found"
+              ? `CSS file not found: ${result.error.path}`
+              : `Failed to read CSS file: ${result.error.path}`;
+          cancel(message);
+          return process.exit(1);
+        });
 
-    const serverConfig: import("./server/index.js").ServerConfig =
+    const serverConfig: ServerConfig =
       mode === "file" && contentType
         ? {
             targetPath: fullPath,
