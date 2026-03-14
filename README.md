@@ -1,4 +1,4 @@
-# peeks
+# @makuja/peek
 
 Markdown and HTML preview CLI with live reload. Spins up a local web server and renders Markdown and HTML files in the browser with real-time updates via Server-Sent Events.
 
@@ -18,7 +18,7 @@ Markdown and HTML preview CLI with live reload. Spins up a local web server and 
 ## Install
 
 ```bash
-npm install -g peeks
+npm install -g @makuja/peek
 ```
 
 ## Usage

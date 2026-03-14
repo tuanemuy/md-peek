@@ -1,5 +1,5 @@
 {
-  "name": "peeks",
+  "name": "@makuja/peek",
   "version": "1.6.3",
   "description": "Markdown and HTML preview CLI with live reload",
   "type": "module",
@@ -39,6 +39,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tuanemuy/peeks.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "license": "MIT",
   "engines": {
