@@ -2,6 +2,7 @@ import type { Dirent } from "node:fs";
 import { readdir, realpath } from "node:fs/promises";
 import { join, relative } from "node:path";
 import ignore, { type Ignore } from "ignore";
+import { isSupportedFile } from "../core/content-type.js";
 import { type TypedError, typedError } from "../core/error.js";
 import type { FileTreeNode } from "../core/file-tree.js";
 import type { Result } from "../core/result.js";
@@ -181,7 +182,7 @@ async function processEntries(
             : null,
         ),
       );
-    } else if (entry.isFile() && entry.name.endsWith(".md")) {
+    } else if (entry.isFile() && isSupportedFile(entry.name)) {
       if (isPathIgnored(relPath, false, rules)) continue;
 
       fileNodes.push({

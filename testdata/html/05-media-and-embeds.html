@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media and Embeds</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      color: #333;
+    }
+    section { margin-bottom: 2rem; }
+    h1 { border-bottom: 2px solid #ddd; padding-bottom: 0.5rem; }
+    h2 { color: #555; margin-top: 2rem; }
+    .placeholder {
+      background: #f0f0f0;
+      border: 2px dashed #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-style: italic;
+      min-height: 120px;
+      border-radius: 4px;
+    }
+    figure { margin: 1rem 0; }
+    figcaption { font-size: 0.9rem; color: #666; text-align: center; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+
+  <h1>Media and Embeds</h1>
+
+  <section>
+    <h2>Inline SVG</h2>
+    <figure>
+      <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="10" width="180" height="180" rx="10" fill="#e8f0fe" stroke="#4285f4" stroke-width="2"/>
+        <circle cx="100" cy="80" r="30" fill="#4285f4"/>
+        <rect x="50" y="120" width="100" height="10" rx="5" fill="#aac8ff"/>
+        <rect x="60" y="140" width="80" height="8" rx="4" fill="#c8dcff"/>
+        <rect x="70" y="156" width="60" height="8" rx="4" fill="#c8dcff"/>
+      </svg>
+      <figcaption>Inline SVG card illustration</figcaption>
+    </figure>
+
+    <figure>
+      <svg width="300" height="100" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#ffd93d;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#6bcb77;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="300" height="100" rx="8" fill="url(#grad)"/>
+        <text x="150" y="55" text-anchor="middle" fill="white" font-size="20" font-family="system-ui" font-weight="bold">SVG Gradient Banner</text>
+      </svg>
+      <figcaption>SVG with gradient fill and text</figcaption>
+    </figure>
+
+    <figure>
+      <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="100,10 190,70 160,170 40,170 10,70" fill="none" stroke="#333" stroke-width="2"/>
+        <polygon points="100,40 160,80 140,150 60,150 40,80" fill="#e8e8ff" stroke="#6666cc" stroke-width="1.5"/>
+        <circle cx="100" cy="100" r="30" fill="#6666cc" opacity="0.3"/>
+      </svg>
+      <figcaption>SVG geometric shapes</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Image Element</h2>
+    <figure>
+      <div class="placeholder" style="width: 400px; height: 200px;">
+        &lt;img&gt; placeholder (no src)
+      </div>
+      <figcaption>Placeholder representing an image element</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Picture Element</h2>
+    <figure>
+      <div class="placeholder" style="width: 400px; height: 200px;">
+        &lt;picture&gt; element with &lt;source&gt; for responsive images
+      </div>
+      <figcaption>The picture element provides art direction for responsive images</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Video Element</h2>
+    <figure>
+      <video controls width="400" style="background: #000; display: block;">
+        <track kind="captions" label="English">
+        Your browser does not support the video element.
+      </video>
+      <figcaption>Video element with native controls (no source loaded)</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Audio Element</h2>
+    <figure>
+      <audio controls style="width: 100%;">
+        Your browser does not support the audio element.
+      </audio>
+      <figcaption>Audio element with native controls (no source loaded)</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Canvas Element</h2>
+    <figure>
+      <canvas id="demo-canvas" width="300" height="150" style="border: 1px solid #ddd; border-radius: 4px; background: #fafafa;"></canvas>
+      <figcaption>Canvas element (requires JavaScript to draw)</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Embedded Content</h2>
+    <figure>
+      <div class="placeholder" style="width: 100%; height: 200px;">
+        &lt;iframe&gt; placeholder for embedded content
+      </div>
+      <figcaption>Iframes are used for embedding external pages</figcaption>
+    </figure>
+  </section>
+
+</body>
+</html>

@@ -1,4 +1,5 @@
 import { type FSWatcher, watch } from "node:fs";
+import { isSupportedFile } from "../core/content-type.js";
 
 export type FileChangeCallback = (filePath: string) => void;
 
@@ -52,7 +53,7 @@ export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
         (_eventType, filename) => {
           if (!filename) return;
           const filePath = filename.toString();
-          if (filePath.endsWith(".md")) {
+          if (isSupportedFile(filePath)) {
             debounced(filePath, () => callback(filePath));
           }
         },

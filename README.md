@@ -1,13 +1,14 @@
 # markdown-peek
 
-Markdown preview CLI with live reload. Spins up a local web server and renders Markdown files in the browser with real-time updates via Server-Sent Events.
+Markdown and HTML preview CLI with live reload. Spins up a local web server and renders Markdown and HTML files in the browser with real-time updates via Server-Sent Events.
 
 ## Features
 
+- **Markdown & HTML preview** - Renders Markdown with GitHub-flavored styles and previews HTML files in an isolated iframe
 - **Live reload** - Automatically refreshes the browser when you save a file
-- **Directory browsing** - Specify a directory to browse and preview Markdown files from a file tree
+- **Directory browsing** - Specify a directory to browse and preview Markdown and HTML files from a file tree
 - **Syntax highlighting** - Code blocks are highlighted with Shiki
-- **Custom CSS** - Customize styles via `--css` flag or `~/.config/peek/style.css`
+- **Custom CSS** - Customize Markdown styles via `--css` flag or `~/.config/peek/style.css`
 - **Dark / Light theme** - Built-in theme toggle
 
 ## Requirements
@@ -23,10 +24,13 @@ npm install -g markdown-peek
 ## Usage
 
 ```bash
-# Preview a single file
+# Preview a Markdown file
 peek README.md
 
-# Browse a directory
+# Preview an HTML file
+peek index.html
+
+# Browse a directory (Markdown and HTML files)
 peek docs/
 
 # Preview current directory
@@ -35,7 +39,7 @@ peek
 # Specify port and host
 peek . --port 8080 --host 0.0.0.0
 
-# Use custom CSS
+# Use custom CSS (Markdown only)
 peek README.md --css ./custom.css
 
 # Disable auto-open browser
@@ -46,15 +50,15 @@ peek README.md --no-open
 
 | Option | Short | Default | Description |
 |---|---|---|---|
-| `path` | - | `.` | File or directory path to preview |
+| `path` | - | `.` | File (`.md`, `.html`, `.htm`) or directory path to preview |
 | `--port` | `-p` | `3000` | Server port |
 | `--host` | `-H` | `localhost` | Bind hostname (`0.0.0.0` for external access) |
-| `--css` | `-c` | - | Path to a custom CSS file |
+| `--css` | `-c` | - | Path to a custom CSS file (Markdown only) |
 | `--open` / `--no-open` | - | `true` | Auto-open browser on start |
 
 ## Custom CSS
 
-Content styles can be customized in three ways (in priority order):
+Content styles for Markdown files can be customized in three ways (in priority order):
 
 1. **`--css` flag** - Pass a CSS file path directly
 2. **XDG config** - Place a `style.css` at `$XDG_CONFIG_HOME/peek/style.css` or `~/.config/peek/style.css`
@@ -63,6 +67,8 @@ Content styles can be customized in three ways (in priority order):
 Custom CSS only affects the `.markdown-body` content area, not the layout chrome.
 
 You can override design tokens (CSS custom properties) for full theme customization. See [`docs/design-token-example.css`](docs/design-token-example.css) for reference.
+
+> **Note:** Custom CSS is not applied to HTML file previews. HTML files are rendered as-is in an isolated iframe with their own styles.
 
 ## License
 

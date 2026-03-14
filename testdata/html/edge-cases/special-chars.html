@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Special Characters</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.8;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      color: #333;
+    }
+    h1 { border-bottom: 2px solid #ddd; padding-bottom: 0.5rem; }
+    h2 { color: #555; margin-top: 2rem; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; }
+    th { background: #f4f4f4; }
+  </style>
+</head>
+<body>
+
+  <h1>Special Characters</h1>
+
+  <section>
+    <h2>HTML Entities</h2>
+    <table>
+      <thead>
+        <tr><th>Entity</th><th>Character</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>&amp;amp;</td><td>&amp;</td><td>Ampersand</td></tr>
+        <tr><td>&amp;lt;</td><td>&lt;</td><td>Less than</td></tr>
+        <tr><td>&amp;gt;</td><td>&gt;</td><td>Greater than</td></tr>
+        <tr><td>&amp;quot;</td><td>&quot;</td><td>Double quote</td></tr>
+        <tr><td>&amp;apos;</td><td>&apos;</td><td>Apostrophe</td></tr>
+        <tr><td>&amp;nbsp;</td><td>[&nbsp;]</td><td>Non-breaking space</td></tr>
+        <tr><td>&amp;mdash;</td><td>&mdash;</td><td>Em dash</td></tr>
+        <tr><td>&amp;ndash;</td><td>&ndash;</td><td>En dash</td></tr>
+        <tr><td>&amp;copy;</td><td>&copy;</td><td>Copyright</td></tr>
+        <tr><td>&amp;reg;</td><td>&reg;</td><td>Registered</td></tr>
+        <tr><td>&amp;trade;</td><td>&trade;</td><td>Trademark</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Unicode Characters</h2>
+    <p>Arrows: ← → ↑ ↓ ↔ ⇐ ⇒ ⇑ ⇓</p>
+    <p>Math: ± × ÷ √ ∞ ≠ ≤ ≥ ∑ ∏ ∫</p>
+    <p>Currency: $ € £ ¥ ₹ ₿ ¢</p>
+    <p>Misc: ★ ☆ ♠ ♣ ♥ ♦ ✓ ✗ ☀ ☁ ☂</p>
+  </section>
+
+  <section>
+    <h2>Emoji</h2>
+    <p style="font-size: 1.5rem;">😀 🎉 🚀 💻 📝 🔥 ✨ 🎨 🐛 🔧</p>
+    <p style="font-size: 1.5rem;">🇯🇵 🇺🇸 🇬🇧 🇩🇪 🇫🇷</p>
+    <p style="font-size: 1.5rem;">👨‍💻 👩‍🔬 🧑‍🎨 👨‍👩‍👧‍👦</p>
+  </section>
+
+  <section>
+    <h2>CJK Characters</h2>
+    <h3>Japanese</h3>
+    <p>漢字テスト: 日本語のテキストが正しく表示されるか確認します。</p>
+    <p>ひらがな: あいうえお かきくけこ さしすせそ</p>
+    <p>カタカナ: アイウエオ カキクケコ サシスセソ</p>
+
+    <h3>Chinese</h3>
+    <p>简体中文: 这是一个测试文档。</p>
+    <p>繁體中文: 這是一個測試文件。</p>
+
+    <h3>Korean</h3>
+    <p>한국어: 이것은 테스트 문서입니다.</p>
+  </section>
+
+  <section>
+    <h2>Right-to-Left Text</h2>
+    <p dir="rtl" lang="ar">هذا نص باللغة العربية لاختبار اتجاه النص من اليمين إلى اليسار.</p>
+    <p dir="rtl" lang="he">זהו טקסט בעברית לבדיקת כיוון הטקסט מימין לשמאל.</p>
+  </section>
+
+  <section>
+    <h2>Mixed Content</h2>
+    <p>English text with 日本語 inline, then more English, puis du français, and back to English.</p>
+    <p>Combining marks: é (e + combining acute) vs é (precomposed)</p>
+    <p>Zero-width characters: A&#x200B;B (zero-width space between A and B)</p>
+  </section>
+
+</body>
+</html>

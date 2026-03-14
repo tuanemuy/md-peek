@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Styling</title>
+  <style>
+    :root {
+      --primary: #4285f4;
+      --secondary: #34a853;
+      --accent: #ea4335;
+      --text: #333;
+      --bg: #fff;
+      --surface: #f8f9fa;
+      --border: #e0e0e0;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      padding: 2rem;
+    }
+
+    h1 { border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 2rem; }
+    h2 { color: #555; margin: 2rem 0 1rem; }
+
+    /* --- Flexbox Layout --- */
+    .flex-demo {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .flex-item {
+      flex: 1;
+      padding: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      text-align: center;
+    }
+
+    /* --- Grid Layout --- */
+    .grid-demo {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .grid-item {
+      padding: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      text-align: center;
+    }
+    .grid-item.span-2 { grid-column: span 2; }
+    .grid-item.span-full { grid-column: 1 / -1; }
+
+    /* --- Cards --- */
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .card-header {
+      padding: 1rem;
+      color: white;
+      font-weight: 600;
+    }
+    .card-body { padding: 1rem; }
+
+    /* --- Badge --- */
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: white;
+      margin: 0.25rem;
+    }
+
+    /* --- Animation --- */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    @keyframes slide-in {
+      from { transform: translateX(-20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-pulse { animation: pulse 2s ease-in-out infinite; }
+    .animate-slide { animation: slide-in 0.5s ease-out; }
+    .animate-spin { animation: spin 2s linear infinite; display: inline-block; }
+
+    /* --- Responsive --- */
+    @media (max-width: 600px) {
+      .flex-demo { flex-direction: column; }
+      .grid-demo { grid-template-columns: 1fr; }
+      .grid-item.span-2 { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>CSS Styling</h1>
+
+  <section>
+    <h2>CSS Custom Properties</h2>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <span class="badge" style="background: var(--primary);">Primary</span>
+      <span class="badge" style="background: var(--secondary);">Secondary</span>
+      <span class="badge" style="background: var(--accent);">Accent</span>
+      <span class="badge" style="background: var(--text);">Text</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Flexbox Layout</h2>
+    <div class="flex-demo">
+      <div class="flex-item">Flex 1</div>
+      <div class="flex-item">Flex 2</div>
+      <div class="flex-item">Flex 3</div>
+    </div>
+    <div class="flex-demo">
+      <div class="flex-item" style="flex: 2;">Flex 2x</div>
+      <div class="flex-item" style="flex: 1;">Flex 1x</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Grid Layout</h2>
+    <div class="grid-demo">
+      <div class="grid-item">1</div>
+      <div class="grid-item">2</div>
+      <div class="grid-item">3</div>
+      <div class="grid-item span-2">Spans 2 columns</div>
+      <div class="grid-item">5</div>
+      <div class="grid-item span-full">Full width row</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Cards with Hover Effects</h2>
+    <div class="card-container">
+      <div class="card">
+        <div class="card-header" style="background: var(--primary);">TypeScript</div>
+        <div class="card-body">
+          <p>Strongly typed JavaScript superset for building scalable applications.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" style="background: var(--secondary);">Node.js</div>
+        <div class="card-body">
+          <p>Server-side JavaScript runtime for building network applications.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" style="background: var(--accent);">Rust</div>
+        <div class="card-body">
+          <p>Systems programming language focused on safety and performance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Animations</h2>
+    <p class="animate-pulse" style="background: var(--surface); padding: 1rem; border-radius: var(--radius); margin: 0.5rem 0;">
+      Pulsing animation effect
+    </p>
+    <p class="animate-slide" style="background: var(--surface); padding: 1rem; border-radius: var(--radius); margin: 0.5rem 0;">
+      Slide-in animation effect
+    </p>
+    <p style="margin: 0.5rem 0;">
+      Spinning element: <span class="animate-spin" style="font-size: 1.5rem;">&#9881;</span>
+    </p>
+  </section>
+
+  <section>
+    <h2>Gradients and Shadows</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: var(--radius); text-align: center;">
+        Linear Gradient
+      </div>
+      <div style="background: radial-gradient(circle, #f093fb 0%, #f5576c 100%); color: white; padding: 2rem; border-radius: var(--radius); text-align: center;">
+        Radial Gradient
+      </div>
+      <div style="background: white; padding: 2rem; border-radius: var(--radius); text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+        Box Shadow
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Transforms</h2>
+    <div style="display: flex; gap: 2rem; justify-content: center; padding: 2rem 0;">
+      <div style="width: 80px; height: 80px; background: var(--primary); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: white; transform: rotate(15deg);">
+        Rotate
+      </div>
+      <div style="width: 80px; height: 80px; background: var(--secondary); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: white; transform: skewX(-10deg);">
+        Skew
+      </div>
+      <div style="width: 80px; height: 80px; background: var(--accent); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: white; transform: scale(1.2);">
+        Scale
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

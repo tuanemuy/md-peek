@@ -1,10 +1,11 @@
+import {
+  SSE_INITIAL_RETRY_MS,
+  SSE_MAX_RETRIES,
+  SSE_MAX_RETRY_MS,
+  SSE_STABLE_THRESHOLD_MS,
+} from "../../core/sse-constants.js";
 import { logger } from "../../lib/logger.js";
 import { normalizePath } from "./path-utils.js";
-
-const SSE_MAX_RETRIES = 10;
-const SSE_INITIAL_RETRY_MS = 1000;
-const SSE_MAX_RETRY_MS = 30000;
-const SSE_STABLE_THRESHOLD_MS = 5000;
 
 function parseFileChangedData(raw: string): { path: string } | null {
   let data: unknown;

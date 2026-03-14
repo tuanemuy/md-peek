@@ -10,19 +10,33 @@ import type { ApiConfig } from "./routes/api.js";
 import { createApiRoutes } from "./routes/api.js";
 import { createDirectoryRoutes } from "./routes/directory.js";
 import { createFileRoutes } from "./routes/file.js";
+import { createHtmlFileRoutes } from "./routes/html-file.js";
 import type { SseManager } from "./routes/sse.js";
 import { createSseManager } from "./routes/sse.js";
 
-type BaseServerConfig = {
-  readonly targetPath: string;
-  readonly port: number;
-  readonly hostname: string;
-  readonly styles: ResolvedStyles;
-};
-
 export type ServerConfig =
-  | (BaseServerConfig & { readonly mode: "file" })
-  | (BaseServerConfig & { readonly mode: "directory" });
+  | {
+      readonly mode: "file";
+      readonly contentType: "html";
+      readonly targetPath: string;
+      readonly port: number;
+      readonly hostname: string;
+    }
+  | {
+      readonly mode: "file";
+      readonly contentType: "markdown";
+      readonly targetPath: string;
+      readonly port: number;
+      readonly hostname: string;
+      readonly styles: ResolvedStyles;
+    }
+  | {
+      readonly mode: "directory";
+      readonly targetPath: string;
+      readonly port: number;
+      readonly hostname: string;
+      readonly styles: ResolvedStyles;
+    };
 
 export type ServerInstance = {
   readonly close: () => Promise<void>;
@@ -35,6 +49,12 @@ type AppContext =
   | {
       readonly mode: "file";
       readonly targetPath: string;
+      readonly contentType: "html";
+    }
+  | {
+      readonly mode: "file";
+      readonly targetPath: string;
+      readonly contentType: "markdown";
       readonly styles: ResolvedStyles;
     }
   | {
@@ -66,8 +86,11 @@ function createApp(ctx: AppContext, sse: SseManager): Hono {
     });
     app.route("/", apiRoutes);
 
-    const fileRoutes = createFileRoutes(ctx.targetPath, ctx.styles);
-    app.route("/", fileRoutes);
+    if (ctx.contentType === "html") {
+      app.route("/", createHtmlFileRoutes(ctx.targetPath));
+    } else {
+      app.route("/", createFileRoutes(ctx.targetPath, ctx.styles));
+    }
   } else {
     const apiConfig: ApiConfig = {
       mode: "directory",
@@ -116,11 +139,18 @@ export async function startServer(
           styles: config.styles,
           treeCache: createFileTreeCache(config.targetPath),
         }
-      : {
-          mode: "file",
-          targetPath: config.targetPath,
-          styles: config.styles,
-        };
+      : config.contentType === "html"
+        ? {
+            mode: "file",
+            targetPath: config.targetPath,
+            contentType: "html",
+          }
+        : {
+            mode: "file",
+            targetPath: config.targetPath,
+            contentType: config.contentType,
+            styles: config.styles,
+          };
 
   const app = createApp(ctx, sse);
   const watcher = setupWatcher(ctx, sse);

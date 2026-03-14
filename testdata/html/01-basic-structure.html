@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basic HTML Structure</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      color: #333;
+    }
+    section { margin-bottom: 2rem; }
+    h1 { border-bottom: 2px solid #ddd; padding-bottom: 0.5rem; }
+    h2 { color: #555; }
+    code { background: #f4f4f4; padding: 0.2em 0.4em; border-radius: 3px; }
+    nav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }
+    nav a { text-decoration: none; color: #0066cc; }
+    nav a:hover { text-decoration: underline; }
+    footer { border-top: 1px solid #ddd; padding-top: 1rem; color: #888; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Basic HTML Structure</h1>
+    <p>A test document demonstrating standard HTML5 semantic elements.</p>
+    <nav>
+      <ul>
+        <li><a href="#semantic">Semantic Elements</a></li>
+        <li><a href="#grouping">Grouping</a></li>
+        <li><a href="#interactive">Interactive</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="semantic">
+      <h2>Semantic Elements</h2>
+
+      <article>
+        <h3>Article Element</h3>
+        <p>The <code>&lt;article&gt;</code> element represents self-contained content that could be independently distributed.</p>
+        <p>Published: <time datetime="2025-01-15">January 15, 2025</time></p>
+      </article>
+
+      <aside>
+        <h3>Aside Element</h3>
+        <p>This is tangentially related content, typically used for sidebars or callout boxes.</p>
+      </aside>
+
+      <figure>
+        <figcaption>Figure: A placeholder diagram description</figcaption>
+        <pre>
+┌──────────────────┐
+│     Header       │
+├────────┬─────────┤
+│  Nav   │  Main   │
+│        │ Content │
+├────────┴─────────┤
+│     Footer       │
+└──────────────────┘
+        </pre>
+      </figure>
+    </section>
+
+    <section id="grouping">
+      <h2>Grouping Content</h2>
+
+      <div>
+        <h3>Address Element</h3>
+        <address>
+          Contact: <a href="mailto:test@example.com">test@example.com</a><br>
+          123 Test Street, Example City
+        </address>
+      </div>
+
+      <div>
+        <h3>Blockquote</h3>
+        <blockquote cite="https://example.com">
+          <p>This is a blockquote element with a citation attribute.</p>
+        </blockquote>
+      </div>
+
+      <div>
+        <h3>Preformatted Text</h3>
+        <pre><code>function hello() {
+  console.log("Hello, world!");
+}</code></pre>
+      </div>
+
+      <div>
+        <h3>Horizontal Rule</h3>
+        <p>Content above the rule.</p>
+        <hr>
+        <p>Content below the rule.</p>
+      </div>
+    </section>
+
+    <section id="interactive">
+      <h2>Interactive Elements</h2>
+
+      <details>
+        <summary>Click to expand this section</summary>
+        <p>This content is hidden by default and revealed when the user clicks the summary.</p>
+        <ul>
+          <li>Item one</li>
+          <li>Item two</li>
+          <li>Item three</li>
+        </ul>
+      </details>
+
+      <details open>
+        <summary>This section is open by default</summary>
+        <p>The <code>open</code> attribute makes this details element visible initially.</p>
+      </details>
+
+      <div>
+        <h3>Dialog Reference</h3>
+        <p>The <code>&lt;dialog&gt;</code> element can be used for modal dialogs (requires JavaScript to open).</p>
+        <dialog open>
+          <p>This is an inline dialog element with the <code>open</code> attribute.</p>
+        </dialog>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Test document for HTML preview feature &mdash; markdown-peek</p>
+  </footer>
+
+</body>
+</html>

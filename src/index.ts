@@ -7,10 +7,12 @@ import { resolve } from "node:path";
 import { cancel, intro, log, outro, spinner } from "@clack/prompts";
 import { cli, define } from "gunshi";
 import pc from "picocolors";
+import { getContentType } from "./core/content-type.js";
 import { logger } from "./lib/logger.js";
 import { initMarkdown } from "./lib/markdown.js";
 import { isNodeError } from "./lib/node-error.js";
 import { resolveStyles } from "./lib/styles.js";
+import type { ServerConfig } from "./server/index.js";
 import { startServer } from "./server/index.js";
 
 const require = createRequire(import.meta.url);
@@ -18,7 +20,7 @@ const pkg = require("../package.json");
 
 const command = define({
   name: "peek",
-  description: "Preview Markdown files in the browser",
+  description: "Preview Markdown and HTML files in the browser",
   args: {
     path: {
       type: "positional",
@@ -49,6 +51,7 @@ const command = define({
     },
   },
   examples: `$ peek README.md
+$ peek index.html
 $ peek docs/
 $ peek . --port 8080
 $ peek README.md --css ./custom.css --no-open`,
@@ -67,9 +70,10 @@ $ peek README.md --css ./custom.css --no-open`,
     });
 
     const mode = pathStat.isDirectory() ? "directory" : "file";
+    const contentType = mode === "file" ? getContentType(fullPath) : null;
 
-    if (mode === "file" && !fullPath.endsWith(".md")) {
-      cancel("Only Markdown files (.md) are supported");
+    if (mode === "file" && !contentType) {
+      cancel("Only Markdown (.md) and HTML (.html, .htm) files are supported");
       process.exit(1);
     }
 
@@ -86,32 +90,63 @@ $ peek README.md --css ./custom.css --no-open`,
     const s = spinner();
     s.start("Initializing...");
 
-    await initMarkdown().catch((e: unknown) => {
-      logger.error("Failed to initialize Markdown renderer:", e);
-      s.stop("Failed to initialize");
-      cancel("Failed to initialize Markdown renderer");
-      return process.exit(1);
-    });
+    const isHtmlFileMode = mode === "file" && contentType === "html";
 
-    const stylesResult = await resolveStyles(css);
-    if (!stylesResult.ok) {
-      s.stop("Failed to resolve styles");
-      const message =
-        stylesResult.error.type === "file-not-found"
-          ? `CSS file not found: ${stylesResult.error.path}`
-          : `Failed to read CSS file: ${stylesResult.error.path}`;
-      cancel(message);
-      process.exit(1);
+    if (isHtmlFileMode && css) {
+      log.warn("--css option is ignored for HTML file preview");
     }
-    const styles = stylesResult.value;
 
-    const server = await startServer({
-      targetPath: fullPath,
-      mode,
-      port,
-      hostname,
-      styles,
-    }).catch((e: unknown) => {
+    if (!isHtmlFileMode) {
+      await initMarkdown().catch((e: unknown) => {
+        logger.error("Failed to initialize Markdown renderer:", e);
+        s.stop("Failed to initialize");
+        cancel("Failed to initialize Markdown renderer");
+        return process.exit(1);
+      });
+    }
+
+    let serverConfig: ServerConfig;
+
+    if (isHtmlFileMode) {
+      serverConfig = {
+        targetPath: fullPath,
+        mode: "file",
+        port,
+        hostname,
+        contentType: "html",
+      };
+    } else {
+      const styles = await resolveStyles(css).then((result) => {
+        if (result.ok) return result.value;
+        s.stop("Failed to resolve styles");
+        const message =
+          result.error.type === "file-not-found"
+            ? `CSS file not found: ${result.error.path}`
+            : `Failed to read CSS file: ${result.error.path}`;
+        cancel(message);
+        return process.exit(1);
+      });
+
+      serverConfig =
+        mode === "file" && contentType && contentType !== "html"
+          ? {
+              targetPath: fullPath,
+              mode: "file",
+              port,
+              hostname,
+              styles,
+              contentType,
+            }
+          : {
+              targetPath: fullPath,
+              mode: "directory",
+              port,
+              hostname,
+              styles,
+            };
+    }
+
+    const server = await startServer(serverConfig).catch((e: unknown) => {
       s.stop("Failed to start server");
       const message =
         isNodeError(e) && e.code === "EADDRINUSE"
@@ -173,5 +208,5 @@ function openBrowser(url: string): void {
 await cli(process.argv.slice(2), command, {
   name: "peek",
   version: pkg.version,
-  description: "Preview Markdown files in the browser",
+  description: "Preview Markdown and HTML files in the browser",
 });

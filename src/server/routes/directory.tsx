@@ -1,17 +1,22 @@
+import { constants } from "node:fs";
+import { access } from "node:fs/promises";
 import { basename, normalize, resolve } from "node:path";
 import { Hono } from "hono";
-import { MainContent } from "../../components/layout/main-content.js";
-import { MarkdownContent } from "../../components/layout/markdown-content.js";
+import { ContentView } from "../../components/content-view.js";
 import { PageHeader } from "../../components/layout/page-header.js";
 import { Sidebar } from "../../components/navigation/sidebar.js";
+import type { ContentType } from "../../core/content-type.js";
+import { getContentType } from "../../core/content-type.js";
 import type { FileTreeNode } from "../../core/file-tree.js";
 import { isWithinBase } from "../../core/path.js";
 import type { FileTreeCache } from "../../lib/file-tree-cache.js";
 import { logger } from "../../lib/logger.js";
 import { renderMarkdown } from "../../lib/markdown.js";
+import { isNodeError } from "../../lib/node-error.js";
 import { readTextFile } from "../../lib/read-text-file.js";
 import type { ResolvedStyles } from "../../lib/styles.js";
 import { Document, renderDocument } from "../renderer/document.js";
+import { renderHtmlDocument } from "../renderer/html-document.js";
 
 function findFirstFile(
   nodes: readonly FileTreeNode[],
@@ -30,11 +35,13 @@ function renderDirectoryView(params: {
   readonly dirTitle: string;
   readonly fileTitle: string;
   readonly currentPath: string;
+  readonly contentType: ContentType;
   readonly html: string;
   readonly tree: readonly FileTreeNode[];
   readonly styles: ResolvedStyles;
 }): string {
-  const { dirTitle, fileTitle, currentPath, html, tree, styles } = params;
+  const { dirTitle, fileTitle, currentPath, contentType, html, tree, styles } =
+    params;
   return renderDocument(
     <Document
       title={fileTitle}
@@ -43,6 +50,7 @@ function renderDirectoryView(params: {
         mode: "directory",
         dirTitle,
         currentPath,
+        contentType,
         content: html,
         tree,
       }}
@@ -54,13 +62,45 @@ function renderDirectoryView(params: {
         showSidebarToggle
         externalLinkHref={`/${currentPath.split("/").map(encodeURIComponent).join("/")}`}
       />
-      <MainContent class="px-5 sm:px-10 py-5 sm:py-10">
-        <div class="max-w-4xl mx-auto">
-          <MarkdownContent htmlContent={html} />
-        </div>
-      </MainContent>
+      <ContentView
+        contentType={contentType}
+        fileTitle={fileTitle}
+        rawUrl={`/api/raw?path=${encodeURIComponent(currentPath)}`}
+        htmlContent={html}
+      />
     </Document>,
   );
+}
+
+async function renderFileContent(
+  fullPath: string,
+  contentType: ContentType,
+): Promise<
+  { ok: true; html: string } | { ok: false; status: 404 | 500; message: string }
+> {
+  if (contentType === "html") {
+    try {
+      await access(fullPath, constants.R_OK);
+    } catch (e: unknown) {
+      if (isNodeError(e) && e.code === "ENOENT") {
+        return { ok: false, status: 404, message: "File not found" };
+      }
+      logger.error("Failed to access file:", e);
+      return { ok: false, status: 500, message: "Internal server error" };
+    }
+    // HTML content is served via /api/raw iframe; no rendered HTML needed here
+    return { ok: true, html: "" };
+  }
+
+  const result = await readTextFile(fullPath);
+  if (!result.ok) {
+    if (result.error.type === "file-not-found") {
+      return { ok: false, status: 404, message: "File not found" };
+    }
+    logger.error("Failed to read file:", result.error);
+    return { ok: false, status: 500, message: "Internal server error" };
+  }
+  return { ok: true, html: await renderMarkdown(result.value) };
 }
 
 export function createDirectoryRoutes(
@@ -79,24 +119,28 @@ export function createDirectoryRoutes(
 
     const firstFile = findFirstFile(treeResult.value);
     if (!firstFile) {
-      return c.text("No markdown files found", 404);
+      return c.text("No supported files found", 404);
     }
 
-    const fullPath = resolve(dirPath, normalize(firstFile.path));
-    const contentResult = await readTextFile(fullPath);
-    if (!contentResult.ok) {
-      logger.error("Failed to read file:", contentResult.error);
+    const contentType = getContentType(firstFile.path);
+    if (!contentType) {
+      logger.error("Unexpected unsupported file in tree:", firstFile.path);
       return c.text("Internal server error", 500);
     }
+    const fullPath = resolve(dirPath, normalize(firstFile.path));
+    const rendered = await renderFileContent(fullPath, contentType);
+    if (!rendered.ok) {
+      return c.text(rendered.message, rendered.status);
+    }
 
-    const html = await renderMarkdown(contentResult.value);
     const dirTitle = basename(dirPath) || dirPath;
     return c.html(
       renderDirectoryView({
         dirTitle,
         fileTitle: basename(firstFile.path),
         currentPath: firstFile.path,
-        html,
+        contentType,
+        html: rendered.html,
         tree: treeResult.value,
         styles,
       }),
@@ -114,17 +158,14 @@ export function createDirectoryRoutes(
       return c.text("Forbidden", 403);
     }
 
-    if (!relativePath.endsWith(".md")) {
+    const contentType = getContentType(relativePath);
+    if (!contentType) {
       return c.text("Not found", 404);
     }
 
-    const contentResult = await readTextFile(fullPath);
-    if (!contentResult.ok) {
-      if (contentResult.error.type === "file-not-found") {
-        return c.text("File not found", 404);
-      }
-      logger.error("Failed to render file:", contentResult.error);
-      return c.text("Internal server error", 500);
+    const rendered = await renderFileContent(fullPath, contentType);
+    if (!rendered.ok) {
+      return c.text(rendered.message, rendered.status);
     }
 
     const treeResult = await treeCache.get();
@@ -133,14 +174,14 @@ export function createDirectoryRoutes(
       return c.text("Internal server error", 500);
     }
 
-    const html = await renderMarkdown(contentResult.value);
     const dirTitle = basename(dirPath) || dirPath;
     return c.html(
       renderDirectoryView({
         dirTitle,
         fileTitle: basename(relativePath),
         currentPath: relativePath,
-        html,
+        contentType,
+        html: rendered.html,
         tree: treeResult.value,
         styles,
       }),
@@ -153,33 +194,48 @@ export function createDirectoryRoutes(
     if (!isWithinBase(dirPath, fullPath)) {
       return c.text("Forbidden", 403);
     }
-    if (!relativePath.endsWith(".md")) {
+
+    const contentType = getContentType(relativePath);
+    if (!contentType) {
       return c.text("Not found", 404);
     }
 
-    const result = await readTextFile(fullPath);
-    if (!result.ok) {
-      if (result.error.type === "file-not-found") {
-        return c.text("File not found", 404);
+    // HTML files use a standalone document with inline SSE (no Preact hydration)
+    // to avoid SSR/hydration mismatch — FileApp only supports Markdown rendering.
+    if (contentType === "html") {
+      const rendered = await renderFileContent(fullPath, contentType);
+      if (!rendered.ok) {
+        return c.text(rendered.message, rendered.status);
       }
-      logger.error("Failed to render file:", result.error);
-      return c.text("Internal server error", 500);
+      const fileTitle = basename(relativePath);
+      return c.html(
+        renderHtmlDocument(
+          fileTitle,
+          `/api/raw?path=${encodeURIComponent(relativePath)}`,
+        ),
+      );
     }
 
-    const html = await renderMarkdown(result.value);
+    const rendered = await renderFileContent(fullPath, contentType);
+    if (!rendered.ok) {
+      return c.text(rendered.message, rendered.status);
+    }
+
     const fileTitle = basename(relativePath);
     return c.html(
       renderDocument(
         <Document
           title={fileTitle}
           styles={styles}
-          initialState={{ mode: "file", content: html }}
+          initialState={{ mode: "file", content: rendered.html }}
         >
-          <main class="px-2 sm:px-5 py-5 sm:py-15">
-            <div class="max-w-4xl mx-auto">
-              <MarkdownContent htmlContent={html} />
-            </div>
-          </main>
+          <ContentView
+            contentType={contentType}
+            fileTitle={fileTitle}
+            rawUrl={`/api/raw?path=${encodeURIComponent(relativePath)}`}
+            htmlContent={rendered.html}
+            markdownClass="px-2 sm:px-5 py-5 sm:py-15"
+          />
         </Document>,
       ),
     );

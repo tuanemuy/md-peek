@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forms and Inputs</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      color: #333;
+    }
+    section { margin-bottom: 2rem; }
+    h1 { border-bottom: 2px solid #ddd; padding-bottom: 0.5rem; }
+    h2 { color: #555; margin-top: 2rem; }
+    fieldset { border: 1px solid #ddd; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
+    legend { font-weight: 600; padding: 0 0.5rem; }
+    label { display: block; margin-bottom: 0.25rem; font-weight: 500; }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="url"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    input[type="search"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      font-family: inherit;
+      font-size: inherit;
+      box-sizing: border-box;
+    }
+    button, input[type="submit"], input[type="reset"] {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      margin-right: 0.5rem;
+    }
+    button:hover, input[type="submit"]:hover { background: #f0f0f0; }
+    .inline-group { display: flex; gap: 1rem; align-items: center; margin-bottom: 0.5rem; }
+    .inline-group label { display: inline; margin-bottom: 0; font-weight: normal; }
+    meter, progress { width: 100%; height: 1.5rem; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+
+  <h1>Forms and Inputs</h1>
+
+  <section>
+    <h2>Text Inputs</h2>
+    <form>
+      <fieldset>
+        <legend>User Details</legend>
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="user@example.com">
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter password">
+
+        <label for="url">Website</label>
+        <input type="url" id="url" name="url" placeholder="https://example.com">
+
+        <label for="tel">Phone</label>
+        <input type="tel" id="tel" name="tel" placeholder="+1 (555) 000-0000">
+
+        <label for="search">Search</label>
+        <input type="search" id="search" name="search" placeholder="Search...">
+      </fieldset>
+    </form>
+  </section>
+
+  <section>
+    <h2>Number and Date Inputs</h2>
+    <form>
+      <fieldset>
+        <legend>Numeric and Temporal</legend>
+        <label for="quantity">Quantity (1-100)</label>
+        <input type="number" id="quantity" name="quantity" min="1" max="100" value="10">
+
+        <label for="range">Range Slider</label>
+        <input type="range" id="range" name="range" min="0" max="100" value="50" style="width: 100%; margin-bottom: 1rem;">
+
+        <label for="date">Date</label>
+        <input type="date" id="date" name="date">
+
+        <label for="time">Time</label>
+        <input type="time" id="time" name="time">
+
+        <label for="color">Color Picker</label>
+        <input type="color" id="color" name="color" value="#0066cc" style="width: 4rem; height: 2rem; margin-bottom: 1rem;">
+      </fieldset>
+    </form>
+  </section>
+
+  <section>
+    <h2>Selection Controls</h2>
+    <form>
+      <fieldset>
+        <legend>Radio Buttons</legend>
+        <div class="inline-group">
+          <input type="radio" id="opt1" name="choice" value="1" checked>
+          <label for="opt1">Option 1</label>
+        </div>
+        <div class="inline-group">
+          <input type="radio" id="opt2" name="choice" value="2">
+          <label for="opt2">Option 2</label>
+        </div>
+        <div class="inline-group">
+          <input type="radio" id="opt3" name="choice" value="3">
+          <label for="opt3">Option 3</label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Checkboxes</legend>
+        <div class="inline-group">
+          <input type="checkbox" id="check1" name="features" value="a" checked>
+          <label for="check1">Feature A</label>
+        </div>
+        <div class="inline-group">
+          <input type="checkbox" id="check2" name="features" value="b">
+          <label for="check2">Feature B</label>
+        </div>
+        <div class="inline-group">
+          <input type="checkbox" id="check3" name="features" value="c" checked>
+          <label for="check3">Feature C</label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Select Menus</legend>
+        <label for="select">Single Select</label>
+        <select id="select" name="single">
+          <option value="" disabled selected>Choose an option</option>
+          <optgroup label="Group A">
+            <option value="a1">Option A1</option>
+            <option value="a2">Option A2</option>
+          </optgroup>
+          <optgroup label="Group B">
+            <option value="b1">Option B1</option>
+            <option value="b2">Option B2</option>
+          </optgroup>
+        </select>
+
+        <label for="multi">Multi Select (hold Ctrl/Cmd)</label>
+        <select id="multi" name="multi" multiple size="4">
+          <option value="1">Item 1</option>
+          <option value="2">Item 2</option>
+          <option value="3">Item 3</option>
+          <option value="4">Item 4</option>
+        </select>
+      </fieldset>
+    </form>
+  </section>
+
+  <section>
+    <h2>Text Area and Output</h2>
+    <form>
+      <label for="textarea">Message</label>
+      <textarea id="textarea" name="message" rows="4" placeholder="Enter your message here..."></textarea>
+
+      <label for="datalist-input">Datalist (type to see suggestions)</label>
+      <input type="text" id="datalist-input" name="datalist" list="languages" placeholder="Start typing...">
+      <datalist id="languages">
+        <option value="TypeScript">
+        <option value="JavaScript">
+        <option value="Python">
+        <option value="Rust">
+        <option value="Go">
+      </datalist>
+    </form>
+  </section>
+
+  <section>
+    <h2>Progress and Meter</h2>
+    <label for="progress">Download Progress (70%)</label>
+    <progress id="progress" value="70" max="100">70%</progress>
+
+    <label for="meter">Disk Usage (40%)</label>
+    <meter id="meter" value="0.4" min="0" max="1" low="0.3" high="0.7" optimum="0.5">40%</meter>
+  </section>
+
+  <section>
+    <h2>Buttons</h2>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <button type="button">Default Button</button>
+      <input type="submit" value="Submit">
+      <input type="reset" value="Reset">
+      <button type="button" disabled>Disabled</button>
+    </div>
+  </section>
+
+</body>
+</html>

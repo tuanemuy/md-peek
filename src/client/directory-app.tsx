@@ -1,8 +1,9 @@
 import { useRef, useState } from "preact/hooks";
-import { MainContent } from "../components/layout/main-content.js";
-import { MarkdownContent } from "../components/layout/markdown-content.js";
+import { ContentView } from "../components/content-view.js";
 import { PageHeader } from "../components/layout/page-header.js";
 import { Sidebar } from "../components/navigation/sidebar.js";
+import type { ContentType } from "../core/content-type.js";
+import { getContentType } from "../core/content-type.js";
 import type { FileTreeNode } from "../core/file-tree.js";
 import { useNavigation } from "./hooks/use-navigation.js";
 import { useSidebar } from "./hooks/use-sidebar.js";
@@ -12,6 +13,7 @@ import { getFileNameFromPath } from "./lib/path-utils.js";
 type DirectoryAppProps = {
   readonly dirTitle: string;
   readonly currentPath: string;
+  readonly contentType: ContentType;
   readonly content: string;
   readonly tree: readonly FileTreeNode[];
 };
@@ -19,12 +21,16 @@ type DirectoryAppProps = {
 export function DirectoryApp({
   dirTitle,
   currentPath: initialPath,
+  contentType: initialContentType,
   content: initialContent,
   tree: initialTree,
 }: DirectoryAppProps) {
   const [currentPath, setCurrentPath] = useState(initialPath);
+  const [contentType, setContentType] =
+    useState<ContentType>(initialContentType);
   const [content, setContent] = useState(initialContent);
   const [tree, setTree] = useState(initialTree);
+  const [htmlReloadKey, setHtmlReloadKey] = useState(0);
   const currentPathRef = useRef(currentPath);
   // Direct ref assignment — no sync effect needed (Preact has no concurrent rendering)
   currentPathRef.current = currentPath;
@@ -32,14 +38,26 @@ export function DirectoryApp({
   const sidebar = useSidebar();
 
   useNavigation((path, html) => {
+    const ct = getContentType(path);
+    if (!ct) {
+      console.error(`Unexpected unsupported file type: ${path}`);
+      return;
+    }
     currentPathRef.current = path;
     setCurrentPath(path);
+    setContentType(ct);
     setContent(html);
+    setHtmlReloadKey(0);
   });
+
+  const contentTypeRef = useRef(contentType);
+  contentTypeRef.current = contentType;
 
   useSseUpdates({
     getCurrentPath: () => currentPathRef.current,
+    getCurrentContentType: () => contentTypeRef.current,
     onContentUpdate: setContent,
+    onHtmlReload: () => setHtmlReloadKey((k) => k + 1),
     onTreeUpdate: setTree,
   });
 
@@ -61,11 +79,13 @@ export function DirectoryApp({
         externalLinkHref={`/${currentPath.split("/").map(encodeURIComponent).join("/")}`}
       />
 
-      <MainContent class="px-5 sm:px-10 py-5 sm:py-10">
-        <div class="max-w-4xl mx-auto">
-          <MarkdownContent htmlContent={content} />
-        </div>
-      </MainContent>
+      <ContentView
+        contentType={contentType}
+        fileTitle={fileTitle}
+        rawUrl={`/api/raw?path=${encodeURIComponent(currentPath)}`}
+        htmlContent={content}
+        htmlReloadKey={htmlReloadKey}
+      />
     </>
   );
 }

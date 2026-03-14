@@ -1,6 +1,6 @@
 # Test Data for Markdown Preview CLI
 
-This directory contains test documents for verifying the Markdown preview functionality.
+This directory contains test documents for verifying the Markdown and HTML preview functionality.
 
 ## Directory Structure
 
@@ -9,6 +9,8 @@ This directory contains test documents for verifying the Markdown preview functi
 | `.` (root) | Core Markdown syntax tests |
 | `japanese/` | Japanese language documents |
 | `edge-cases/` | Edge cases and stress tests |
+| `html/` | HTML file preview tests |
+| `html/edge-cases/` | HTML edge cases (minimal, no-doctype, fragment, special chars) |
 | `nested/deep/structure/` | Deeply nested directory structure |
 
 ## Documents

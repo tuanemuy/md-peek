@@ -42,7 +42,9 @@ export function Document({
         />
       </head>
       <body class="bg-background text-foreground min-h-screen">
-        <div id="app">{children}</div>
+        <div id="app" class="flex flex-col min-h-dvh">
+          {children}
+        </div>
         {initialStateScript && (
           <script dangerouslySetInnerHTML={{ __html: initialStateScript }} />
         )}

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tables and Lists</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+      color: #333;
+    }
+    section { margin-bottom: 2rem; }
+    h1 { border-bottom: 2px solid #ddd; padding-bottom: 0.5rem; }
+    h2 { color: #555; margin-top: 2rem; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #ddd; padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: #f4f4f4; font-weight: 600; }
+    tr:nth-child(even) { background: #fafafa; }
+    caption { font-weight: 600; margin-bottom: 0.5rem; caption-side: top; text-align: left; }
+  </style>
+</head>
+<body>
+
+  <h1>Tables and Lists</h1>
+
+  <section>
+    <h2>Basic Table</h2>
+    <table>
+      <caption>User Information</caption>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Alice Johnson</td>
+          <td>alice@example.com</td>
+          <td>Admin</td>
+        </tr>
+        <tr>
+          <td>Bob Smith</td>
+          <td>bob@example.com</td>
+          <td>Editor</td>
+        </tr>
+        <tr>
+          <td>Carol Williams</td>
+          <td>carol@example.com</td>
+          <td>Viewer</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3">Total: 3 users</td>
+        </tr>
+      </tfoot>
+    </table>
+  </section>
+
+  <section>
+    <h2>Table with Column/Row Spanning</h2>
+    <table>
+      <thead>
+        <tr>
+          <th rowspan="2">Category</th>
+          <th colspan="2">Q1</th>
+          <th colspan="2">Q2</th>
+        </tr>
+        <tr>
+          <th>Revenue</th>
+          <th>Cost</th>
+          <th>Revenue</th>
+          <th>Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Product A</td>
+          <td>$10,000</td>
+          <td>$4,000</td>
+          <td>$12,000</td>
+          <td>$4,500</td>
+        </tr>
+        <tr>
+          <td>Product B</td>
+          <td>$8,000</td>
+          <td>$3,000</td>
+          <td>$9,500</td>
+          <td>$3,200</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Table with Column Groups</h2>
+    <table>
+      <colgroup>
+        <col style="background-color: #e8f4e8;">
+        <col span="2" style="background-color: #e8e8f4;">
+        <col style="background-color: #f4e8e8;">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Language</th>
+          <th>Type System</th>
+          <th>Paradigm</th>
+          <th>Year</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>TypeScript</td>
+          <td>Static</td>
+          <td>Multi-paradigm</td>
+          <td>2012</td>
+        </tr>
+        <tr>
+          <td>Rust</td>
+          <td>Static</td>
+          <td>Multi-paradigm</td>
+          <td>2010</td>
+        </tr>
+        <tr>
+          <td>Python</td>
+          <td>Dynamic</td>
+          <td>Multi-paradigm</td>
+          <td>1991</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Unordered Lists</h2>
+    <ul>
+      <li>First item</li>
+      <li>Second item
+        <ul>
+          <li>Nested item A</li>
+          <li>Nested item B
+            <ul>
+              <li>Deeply nested item</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Third item</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Ordered Lists</h2>
+    <ol>
+      <li>Step one</li>
+      <li>Step two
+        <ol type="a">
+          <li>Sub-step a</li>
+          <li>Sub-step b
+            <ol type="i">
+              <li>Detail i</li>
+              <li>Detail ii</li>
+            </ol>
+          </li>
+        </ol>
+      </li>
+      <li>Step three</li>
+    </ol>
+
+    <h3>Custom Start Number</h3>
+    <ol start="5">
+      <li>Item five</li>
+      <li>Item six</li>
+      <li>Item seven</li>
+    </ol>
+
+    <h3>Reversed List</h3>
+    <ol reversed>
+      <li>Third place</li>
+      <li>Second place</li>
+      <li>First place</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Definition Lists</h2>
+    <dl>
+      <dt>HTML</dt>
+      <dd>HyperText Markup Language, the standard markup language for web pages.</dd>
+
+      <dt>CSS</dt>
+      <dd>Cascading Style Sheets, a language for describing the presentation of HTML documents.</dd>
+
+      <dt>JavaScript</dt>
+      <dd>A programming language used to create interactive effects within web browsers.</dd>
+      <dd>Also used server-side with runtimes like Node.js, Deno, and Bun.</dd>
+    </dl>
+  </section>
+
+</body>
+</html>
