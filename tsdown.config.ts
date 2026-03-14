@@ -5,5 +5,4 @@ export default defineConfig({
   outDir: "dist",
   format: "esm",
   clean: true,
-  loader: { ".css": "text" },
 });

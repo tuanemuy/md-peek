@@ -16,6 +16,7 @@
     "noUncheckedSideEffectImports": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+    "types": ["node"],
     "jsx": "react-jsx",
     "jsxImportSource": "preact"
   },

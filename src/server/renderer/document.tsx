@@ -4,7 +4,7 @@ import type { InitialState } from "../../core/initial-state.js";
 import type { ResolvedStyles } from "../../lib/styles.js";
 import { clientBundle } from "./client-bundle.js";
 import { faviconBase64 } from "./favicon.js";
-import globalCss from "./global.css";
+import globalCss from "./global.css?inline";
 
 const themeInitScript = `(function(){var t=localStorage.getItem("theme");if(t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")})()`;
 

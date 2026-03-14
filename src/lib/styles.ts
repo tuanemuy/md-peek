@@ -2,7 +2,7 @@ import { homedir } from "node:os";
 import { isAbsolute, resolve } from "node:path";
 import type { Result } from "../core/result.js";
 import { map, ok } from "../core/result.js";
-import contentCssDefault from "../styles/content.css";
+import contentCssDefault from "../styles/content.css?inline";
 import type { ReadTextFileError } from "./read-text-file.js";
 import { readTextFile } from "./read-text-file.js";
 

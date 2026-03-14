@@ -9,15 +9,16 @@ export default defineConfig({
       name: "css-raw-text",
       enforce: "pre",
       resolveId(source, importer) {
+        const cssSource = source.replace(/\?inline$/, "");
         if (
-          source.endsWith(".css") &&
+          cssSource.endsWith(".css") &&
           importer &&
-          !source.includes("node_modules")
+          !cssSource.includes("node_modules")
         ) {
           const importerDir = importer.startsWith("file://")
             ? dirname(fileURLToPath(importer))
             : dirname(importer);
-          const resolved = resolve(importerDir, source);
+          const resolved = resolve(importerDir, cssSource);
           return `${resolved}.js`;
         }
       },
