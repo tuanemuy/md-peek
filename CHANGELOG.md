@@ -1,3 +1,21 @@
+# [1.6.0](https://github.com/tuanemuy/markdown-peek/compare/v1.5.1...v1.6.0) (2026-03-14)
+
+
+### Bug Fixes
+
+* address PR [#37](https://github.com/tuanemuy/markdown-peek/issues/37) review - security, type safety, and code quality ([9513cb0](https://github.com/tuanemuy/markdown-peek/commit/9513cb0b4b32ef5b758af19bb87d0bc5ac820371))
+* address PR [#37](https://github.com/tuanemuy/markdown-peek/issues/37) review round 2 - security, quality, and test coverage ([100cdcb](https://github.com/tuanemuy/markdown-peek/commit/100cdcbe381927a20825002c617a5e7ef15fd52c))
+* address PR [#37](https://github.com/tuanemuy/markdown-peek/issues/37) review round 3 - SSE bug, deduplication, and testing ([5db9d3b](https://github.com/tuanemuy/markdown-peek/commit/5db9d3bebf0c867cda90c5a61ebe67b8dcd64f8f))
+* address PR [#37](https://github.com/tuanemuy/markdown-peek/issues/37) review round 4 - blocker fixes and improvements ([d0f263c](https://github.com/tuanemuy/markdown-peek/commit/d0f263cb0ca21bb60c3305282b9a50065365fc63))
+* improve HTML preview iframe layout to fill available height ([baf07c4](https://github.com/tuanemuy/markdown-peek/commit/baf07c4091bce64a179eeaf3a1cf05896ed071ac)), closes [#app](https://github.com/tuanemuy/markdown-peek/issues/app)
+* relax iframe sandbox and remove CSP for full HTML expressiveness ([f824d04](https://github.com/tuanemuy/markdown-peek/commit/f824d0495f90a6384cc3ea66ed1d13183a0ac74e))
+* use standalone HTML document in catch-all route to prevent hydration mismatch ([bc16647](https://github.com/tuanemuy/markdown-peek/commit/bc16647514baa9a15707721b298fae05c9dc28da))
+
+
+### Features
+
+* add HTML file preview support ([b8a5ba8](https://github.com/tuanemuy/markdown-peek/commit/b8a5ba8d52f8814ad4a321c4e89643f18760b42f)), closes [#36](https://github.com/tuanemuy/markdown-peek/issues/36)
+
 ## [1.5.1](https://github.com/tuanemuy/markdown-peek/compare/v1.5.0...v1.5.1) (2026-03-03)
 
 
