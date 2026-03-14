@@ -43,13 +43,12 @@ describe("buildFileTree", () => {
     expect(files.some((f) => f.name === "README.md")).toBe(true);
   });
 
-  it("excludes .git and node_modules", async () => {
+  it("excludes .git", async () => {
     const result = await buildFileTree(testDir);
     const tree = assertOk(result);
     const allNames = flattenNames(tree);
 
     expect(allNames).not.toContain(".git");
-    expect(allNames).not.toContain("node_modules");
   });
 
   it("only includes supported files (.md, .html, .htm)", async () => {
@@ -75,11 +74,11 @@ describe("buildFileTree", () => {
     }
   });
 
-  it("excludes dotfiles", async () => {
+  it("includes dotfiles not excluded by ignore rules", async () => {
     const result = await buildFileTree(testDir);
     const tree = assertOk(result);
     const allNames = flattenNames(tree);
-    expect(allNames).not.toContain(".hidden.md");
+    expect(allNames).toContain(".hidden.md");
   });
 
   it("excludes empty directories", async () => {

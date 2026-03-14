@@ -10,16 +10,7 @@ import { err, ok } from "../core/result.js";
 import { logger } from "./logger.js";
 import { readTextFile } from "./read-text-file.js";
 
-const DEFAULT_IGNORE_PATTERNS = [
-  ".git/",
-  "node_modules/",
-  ".next/",
-  ".nuxt/",
-  ".svelte-kit/",
-  "dist/",
-  "build/",
-  ".cache/",
-];
+const DEFAULT_IGNORE_PATTERNS = [".git/"];
 
 type IgnoreRule = {
   readonly ig: Ignore;
@@ -162,8 +153,6 @@ async function processEntries(
   const dirPromises: Promise<FileTreeNode | null>[] = [];
 
   for (const entry of entries) {
-    if (entry.name.startsWith(".")) continue;
-
     const fullPath = join(dir, entry.name);
     const relPath = relative(rootDir, fullPath);
 
