@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/tuanemuy/markdown-peek/compare/v1.6.0...v1.6.1) (2026-03-14)
+
+
+### Bug Fixes
+
+* remove iframe sandbox attribute for local preview tool ([ab264fb](https://github.com/tuanemuy/markdown-peek/commit/ab264fb5433a77f6224e57d17db00f6852e9bb36)), closes [#38](https://github.com/tuanemuy/markdown-peek/issues/38)
+
 # [1.6.0](https://github.com/tuanemuy/markdown-peek/compare/v1.5.1...v1.6.0) (2026-03-14)
 
 
