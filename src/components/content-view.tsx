@@ -1,8 +1,5 @@
 import type { ContentType } from "../core/content-type.js";
-import {
-  FULLSCREEN_IFRAME_STYLE,
-  IFRAME_SANDBOX,
-} from "../core/iframe-style.js";
+import { FULLSCREEN_IFRAME_STYLE } from "../core/iframe-style.js";
 import { MainContent } from "./layout/main-content.js";
 import { MarkdownContent } from "./layout/markdown-content.js";
 
@@ -31,7 +28,6 @@ export function ContentView({
           title={fileTitle}
           src={rawUrl}
           style={FULLSCREEN_IFRAME_STYLE}
-          sandbox={IFRAME_SANDBOX}
         />
       </MainContent>
     );

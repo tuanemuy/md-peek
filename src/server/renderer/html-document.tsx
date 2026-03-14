@@ -1,5 +1,4 @@
 import renderToString from "preact-render-to-string";
-import { IFRAME_SANDBOX } from "../../core/iframe-style.js";
 import {
   SSE_INITIAL_RETRY_MS,
   SSE_MAX_RETRIES,
@@ -60,12 +59,7 @@ export function HtmlDocument({ title, rawContentUrl }: HtmlDocumentProps) {
         />
       </head>
       <body>
-        <iframe
-          id="content-frame"
-          title={title}
-          src={rawContentUrl}
-          sandbox={IFRAME_SANDBOX}
-        />
+        <iframe id="content-frame" title={title} src={rawContentUrl} />
         <script dangerouslySetInnerHTML={{ __html: sseReloadScript }} />
       </body>
     </html>

@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { IFRAME_SANDBOX } from "../../core/iframe-style.js";
 import { createHtmlFileRoutes } from "./html-file.js";
 
 describe("html file routes", () => {
@@ -13,7 +12,7 @@ describe("html file routes", () => {
     expect(html).toContain("test.html - peek");
     expect(html).toContain("<iframe");
     expect(html).toContain("/api/raw");
-    expect(html).toContain(`sandbox="${IFRAME_SANDBOX}"`);
+    expect(html).not.toContain("sandbox=");
   });
 
   it("GET / includes SSE reload script", async () => {

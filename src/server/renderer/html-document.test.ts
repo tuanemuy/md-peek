@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { IFRAME_SANDBOX } from "../../core/iframe-style.js";
 import {
   SSE_INITIAL_RETRY_MS,
   SSE_MAX_RETRIES,
@@ -14,11 +13,10 @@ describe("renderHtmlDocument", () => {
     expect(html).toContain("<title>My Page - peek</title>");
   });
 
-  it("renders iframe with correct src, id, and sandbox attributes", () => {
+  it("renders iframe with correct src and id attributes", () => {
     const html = renderHtmlDocument("test", "/api/raw?file=hello.html");
     expect(html).toContain('src="/api/raw?file=hello.html"');
     expect(html).toContain('id="content-frame"');
-    expect(html).toContain(`sandbox="${IFRAME_SANDBOX}"`);
   });
 
   it("escapes special characters in title", () => {

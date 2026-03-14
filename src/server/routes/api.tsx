@@ -3,10 +3,7 @@ import { Hono } from "hono";
 import renderToString from "preact-render-to-string";
 import type { ContentType } from "../../core/content-type.js";
 import { getContentType } from "../../core/content-type.js";
-import {
-  FULLSCREEN_IFRAME_STYLE,
-  IFRAME_SANDBOX,
-} from "../../core/iframe-style.js";
+import { FULLSCREEN_IFRAME_STYLE } from "../../core/iframe-style.js";
 import { isWithinBase } from "../../core/path.js";
 import type { FileTreeCache } from "../../lib/file-tree-cache.js";
 import { logger } from "../../lib/logger.js";
@@ -28,12 +25,7 @@ export type ApiConfig = FileApiConfig | DirectoryApiConfig;
 
 function renderRawHtmlIframe(rawUrl: string, title: string): string {
   return renderToString(
-    <iframe
-      src={rawUrl}
-      style={FULLSCREEN_IFRAME_STYLE}
-      title={title}
-      sandbox={IFRAME_SANDBOX}
-    />,
+    <iframe src={rawUrl} style={FULLSCREEN_IFRAME_STYLE} title={title} />,
   );
 }
 
@@ -129,8 +121,7 @@ export function createApiRoutes(config: ApiConfig): Hono {
         return c.text("Failed to read file", 500);
       }
       // CSP is intentionally omitted: this is a local preview tool serving
-      // the user's own HTML files. The iframe sandbox attribute provides
-      // sufficient isolation while allowing full HTML expressiveness.
+      // the user's own HTML files with full HTML expressiveness.
       c.header("X-Content-Type-Options", "nosniff");
       return c.html(result.value);
     }
