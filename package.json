@@ -1,7 +1,7 @@
 {
-  "name": "markdown-peek",
+  "name": "peeks",
   "version": "1.6.3",
-  "description": "Markdown preview CLI with live reload",
+  "description": "Markdown and HTML preview CLI with live reload",
   "type": "module",
   "bin": {
     "peek": "dist/index.mjs"
@@ -30,6 +30,7 @@
   },
   "keywords": [
     "markdown",
+    "html",
     "preview",
     "cli",
     "live-reload"
@@ -37,7 +38,7 @@
   "author": "Hikaru Otabe",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tuanemuy/markdown-peek.git"
+    "url": "git+https://github.com/tuanemuy/peeks.git"
   },
   "license": "MIT",
   "engines": {
