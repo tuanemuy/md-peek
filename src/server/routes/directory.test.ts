@@ -113,7 +113,7 @@ describe("directory routes - catch-all path", () => {
     expect(res.status).toBe(404);
   });
 
-  it("GET /page.html returns rendered page with iframe", async () => {
+  it("GET /page.html returns standalone HTML document with iframe and SSE", async () => {
     const app = await createTestApp();
     const res = await app.request("/page.html");
     expect(res.status).toBe(200);
@@ -121,7 +121,12 @@ describe("directory routes - catch-all path", () => {
     const html = await res.text();
     expect(html).toContain("<!DOCTYPE html>");
     expect(html).toContain("iframe");
-    expect(html).toContain("/api/raw");
+    expect(html).toContain("/api/raw?path=page.html");
+    // Standalone HTML document (no Preact hydration) with inline SSE
+    expect(html).toContain("EventSource");
+    expect(html).toContain("page.html - peek");
+    // Should NOT contain Preact initial state (no hydration mismatch)
+    expect(html).not.toContain("__INITIAL_STATE__");
   });
 
   it("GET /somefile.txt returns 404 for unsupported extension", async () => {

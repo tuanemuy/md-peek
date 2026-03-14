@@ -16,6 +16,7 @@ import { isNodeError } from "../../lib/node-error.js";
 import { readTextFile } from "../../lib/read-text-file.js";
 import type { ResolvedStyles } from "../../lib/styles.js";
 import { Document, renderDocument } from "../renderer/document.js";
+import { renderHtmlDocument } from "../renderer/html-document.js";
 
 function findFirstFile(
   nodes: readonly FileTreeNode[],
@@ -197,6 +198,22 @@ export function createDirectoryRoutes(
     const contentType = getContentType(relativePath);
     if (!contentType) {
       return c.text("Not found", 404);
+    }
+
+    // HTML files use a standalone document with inline SSE (no Preact hydration)
+    // to avoid SSR/hydration mismatch — FileApp only supports Markdown rendering.
+    if (contentType === "html") {
+      const rendered = await renderFileContent(fullPath, contentType);
+      if (!rendered.ok) {
+        return c.text(rendered.message, rendered.status);
+      }
+      const fileTitle = basename(relativePath);
+      return c.html(
+        renderHtmlDocument(
+          fileTitle,
+          `/api/raw?path=${encodeURIComponent(relativePath)}`,
+        ),
+      );
     }
 
     const rendered = await renderFileContent(fullPath, contentType);
