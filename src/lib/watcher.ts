@@ -41,6 +41,8 @@ export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
       });
       watcher.on("error", () => {
         watcher.close();
+        const idx = watchers.indexOf(watcher);
+        if (idx !== -1) watchers.splice(idx, 1);
       });
       watchers.push(watcher);
     },
@@ -60,6 +62,8 @@ export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
       );
       watcher.on("error", () => {
         watcher.close();
+        const idx = watchers.indexOf(watcher);
+        if (idx !== -1) watchers.splice(idx, 1);
       });
       watchers.push(watcher);
     },
