@@ -41,8 +41,6 @@ export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
       });
       watcher.on("error", () => {
         watcher.close();
-        const idx = watchers.indexOf(watcher);
-        if (idx !== -1) watchers.splice(idx, 1);
       });
       watchers.push(watcher);
     },
@@ -62,19 +60,16 @@ export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
       );
       watcher.on("error", () => {
         watcher.close();
-        const idx = watchers.indexOf(watcher);
-        if (idx !== -1) watchers.splice(idx, 1);
       });
       watchers.push(watcher);
     },
 
     close(): void {
       closed = true;
-      const snapshot = [...watchers];
-      watchers.length = 0;
-      for (const watcher of snapshot) {
+      for (const watcher of watchers) {
         watcher.close();
       }
+      watchers.length = 0;
       for (const timer of debounceTimers.values()) {
         clearTimeout(timer);
       }

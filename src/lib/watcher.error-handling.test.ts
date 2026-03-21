@@ -58,19 +58,6 @@ describe("watchFile error handling", () => {
 
     handle.close();
   });
-
-  it("watcher is removed from internal array after error", () => {
-    const handle = createFileWatcher(50);
-    const callback = vi.fn();
-    handle.watchFile("/tmp/test.md", callback);
-
-    mockWatcher.emit("error", new Error("EACCES: permission denied"));
-
-    expect(mockWatcher.close).toHaveBeenCalledTimes(1);
-
-    handle.close();
-    expect(mockWatcher.close).toHaveBeenCalledTimes(1);
-  });
 });
 
 describe("watchDirectory error handling", () => {
@@ -100,18 +87,5 @@ describe("watchDirectory error handling", () => {
     expect(callback).not.toHaveBeenCalled();
 
     handle.close();
-  });
-
-  it("watcher is removed from internal array after error", () => {
-    const handle = createFileWatcher(50);
-    const callback = vi.fn();
-    handle.watchDirectory("/tmp", callback);
-
-    mockWatcher.emit("error", new Error("EACCES: permission denied"));
-
-    expect(mockWatcher.close).toHaveBeenCalledTimes(1);
-
-    handle.close();
-    expect(mockWatcher.close).toHaveBeenCalledTimes(1);
   });
 });
