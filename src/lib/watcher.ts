@@ -70,10 +70,11 @@ export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
 
     close(): void {
       closed = true;
-      for (const watcher of watchers) {
+      const snapshot = [...watchers];
+      watchers.length = 0;
+      for (const watcher of snapshot) {
         watcher.close();
       }
-      watchers.length = 0;
       for (const timer of debounceTimers.values()) {
         clearTimeout(timer);
       }
