@@ -58,6 +58,9 @@ export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
           }
         },
       );
+      watcher.on("error", () => {
+        watcher.close();
+      });
       watchers.push(watcher);
     },
 
