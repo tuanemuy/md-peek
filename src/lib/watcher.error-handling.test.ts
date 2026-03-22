@@ -32,6 +32,7 @@ afterEach(() => {
 
 describe("watchFile error handling", () => {
   it("error event closes watcher without throwing", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     const handle = createFileWatcher(50);
     const callback = vi.fn();
     handle.watchFile("/tmp/test.md", callback);
@@ -41,7 +42,12 @@ describe("watchFile error handling", () => {
     }).not.toThrow();
 
     expect(mockWatcher.close).toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledWith(
+      "File watcher error for /tmp/test.md:",
+      "EACCES: permission denied",
+    );
 
+    warnSpy.mockRestore();
     handle.close();
   });
 
@@ -62,6 +68,7 @@ describe("watchFile error handling", () => {
 
 describe("watchDirectory error handling", () => {
   it("error event closes watcher without throwing", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     const handle = createFileWatcher(50);
     const callback = vi.fn();
     handle.watchDirectory("/tmp", callback);
@@ -71,7 +78,12 @@ describe("watchDirectory error handling", () => {
     }).not.toThrow();
 
     expect(mockWatcher.close).toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledWith(
+      "Directory watcher error for /tmp:",
+      "EACCES: permission denied",
+    );
 
+    warnSpy.mockRestore();
     handle.close();
   });
 
