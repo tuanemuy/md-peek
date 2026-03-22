@@ -189,6 +189,9 @@ export async function startServer(
     async shutdown() {
       sseCloseAll();
       watcher.close();
+      if ("closeAllConnections" in server) {
+        server.closeAllConnections();
+      }
       await close();
     },
   };
