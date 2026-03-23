@@ -41,7 +41,7 @@ export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
         }
       });
       watcher.on("error", (error: Error) => {
-        logger.warn(`File watcher error for ${filePath}:`, error.message);
+        logger.warn(`File watcher error for ${filePath}:`, error);
         watcher.close();
       });
       watchers.push(watcher);
@@ -61,7 +61,7 @@ export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
         },
       );
       watcher.on("error", (error: Error) => {
-        logger.warn(`Directory watcher error for ${dirPath}:`, error.message);
+        logger.warn(`Directory watcher error for ${dirPath}:`, error);
         watcher.close();
       });
       watchers.push(watcher);

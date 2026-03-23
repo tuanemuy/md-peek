@@ -38,15 +38,16 @@ describe("watchFile error handling", () => {
     const callback = vi.fn();
     handle.watchFile("/tmp/test.md", callback);
 
+    const emittedError = new Error("EACCES: permission denied");
     expect(() => {
-      mockWatcher.emit("error", new Error("EACCES: permission denied"));
+      mockWatcher.emit("error", emittedError);
     }).not.toThrow();
 
     expect(mockWatcher.close).toHaveBeenCalled();
     expect(console.warn).toHaveBeenCalledWith(
       "[peek]",
       "File watcher error for /tmp/test.md:",
-      "EACCES: permission denied",
+      emittedError,
     );
 
     handle.close();
@@ -73,15 +74,16 @@ describe("watchDirectory error handling", () => {
     const callback = vi.fn();
     handle.watchDirectory("/tmp", callback);
 
+    const emittedError = new Error("EACCES: permission denied");
     expect(() => {
-      mockWatcher.emit("error", new Error("EACCES: permission denied"));
+      mockWatcher.emit("error", emittedError);
     }).not.toThrow();
 
     expect(mockWatcher.close).toHaveBeenCalled();
     expect(console.warn).toHaveBeenCalledWith(
       "[peek]",
       "Directory watcher error for /tmp:",
-      "EACCES: permission denied",
+      emittedError,
     );
 
     handle.close();
