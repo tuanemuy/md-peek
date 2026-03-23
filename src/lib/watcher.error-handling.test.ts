@@ -23,11 +23,13 @@ const { createFileWatcher } = await import("./watcher.js");
 beforeEach(() => {
   mockWatcher.removeAllListeners();
   mockWatcher.close = vi.fn(() => mockWatcher.removeAllListeners());
+  vi.spyOn(console, "warn").mockImplementation(() => {});
   vi.useFakeTimers();
 });
 
 afterEach(() => {
   vi.useRealTimers();
+  vi.restoreAllMocks();
 });
 
 describe("watchFile error handling", () => {
@@ -36,11 +38,17 @@ describe("watchFile error handling", () => {
     const callback = vi.fn();
     handle.watchFile("/tmp/test.md", callback);
 
+    const emittedError = new Error("EACCES: permission denied");
     expect(() => {
-      mockWatcher.emit("error", new Error("EACCES: permission denied"));
+      mockWatcher.emit("error", emittedError);
     }).not.toThrow();
 
     expect(mockWatcher.close).toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledWith(
+      "[peek]",
+      "File watcher error for /tmp/test.md:",
+      emittedError,
+    );
 
     handle.close();
   });
@@ -66,11 +74,17 @@ describe("watchDirectory error handling", () => {
     const callback = vi.fn();
     handle.watchDirectory("/tmp", callback);
 
+    const emittedError = new Error("EACCES: permission denied");
     expect(() => {
-      mockWatcher.emit("error", new Error("EACCES: permission denied"));
+      mockWatcher.emit("error", emittedError);
     }).not.toThrow();
 
     expect(mockWatcher.close).toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledWith(
+      "[peek]",
+      "Directory watcher error for /tmp:",
+      emittedError,
+    );
 
     handle.close();
   });

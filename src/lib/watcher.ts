@@ -1,5 +1,6 @@
 import { type FSWatcher, watch } from "node:fs";
 import { isSupportedFile } from "../core/content-type.js";
+import { logger } from "./logger.js";
 
 export type FileChangeCallback = (filePath: string) => void;
 
@@ -39,7 +40,8 @@ export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
           watcher.close();
         }
       });
-      watcher.on("error", () => {
+      watcher.on("error", (error: Error) => {
+        logger.warn(`File watcher error for ${filePath}:`, error);
         watcher.close();
       });
       watchers.push(watcher);
@@ -58,7 +60,8 @@ export function createFileWatcher(debounceMs = 100): FileWatcherHandle {
           }
         },
       );
-      watcher.on("error", () => {
+      watcher.on("error", (error: Error) => {
+        logger.warn(`Directory watcher error for ${dirPath}:`, error);
         watcher.close();
       });
       watchers.push(watcher);
