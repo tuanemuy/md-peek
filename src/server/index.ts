@@ -182,17 +182,23 @@ export async function startServer(
     });
   const sseCloseAll = () => sse.closeAll();
 
+  let shutdownPromise: Promise<void> | undefined;
+
   return {
     close,
     watcher,
     sseCloseAll,
-    async shutdown() {
-      sseCloseAll();
-      watcher.close();
-      if ("closeAllConnections" in server) {
-        server.closeAllConnections();
-      }
-      await close();
+    shutdown() {
+      if (shutdownPromise) return shutdownPromise;
+      shutdownPromise = (async () => {
+        sseCloseAll();
+        watcher.close();
+        if ("closeAllConnections" in server) {
+          server.closeAllConnections();
+        }
+        await close();
+      })();
+      return shutdownPromise;
     },
   };
 }

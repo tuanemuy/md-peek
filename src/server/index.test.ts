@@ -70,12 +70,22 @@ describe("startServer / shutdown lifecycle", () => {
     await expect(fetch(`http://localhost:${port}/`)).rejects.toThrow();
   });
 
-  it("calling shutdown twice rejects on the second call", async () => {
+  it("calling shutdown twice resolves safely (idempotent)", async () => {
     const port = await getFreePort();
     server = await startServer({ ...baseConfig, port });
 
     await server.shutdown();
-    await expect(server.shutdown()).rejects.toThrow();
+    await expect(server.shutdown()).resolves.toBeUndefined();
+    server = undefined;
+  });
+
+  it("concurrent shutdown calls resolve safely", async () => {
+    const port = await getFreePort();
+    server = await startServer({ ...baseConfig, port });
+
+    await expect(
+      Promise.all([server.shutdown(), server.shutdown()]),
+    ).resolves.toEqual([undefined, undefined]);
     server = undefined;
   });
 });
