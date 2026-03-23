@@ -174,7 +174,11 @@ $ peek README.md --css ./custom.css --no-open`,
       shuttingDown = true;
       console.log();
       intro(pc.bgYellow(pc.black(" Shutting down... ")));
-      await server.shutdown();
+      try {
+        await server.shutdown();
+      } catch (e: unknown) {
+        logger.error("Failed to shut down server:", e);
+      }
       outro(pc.green("Server stopped. Bye!"));
       process.exit(0);
     };
