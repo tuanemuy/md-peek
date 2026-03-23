@@ -26,9 +26,9 @@
 - **目的:** 2回目のシグナルで即座にプロセスが終了することを確認
 - **手順:**
   1. `pnpm dev -- ./README.md` でサーバーを起動
-  2. 別ターミナルで `PID=$(pgrep -f "tsx.*src/index.ts")` でPIDを取得
-  3. `kill -SIGINT $PID && kill -SIGINT $PID` で素早く2回送信
-  4. `echo $?` で終了コードを確認（または元のターミナルで出力を確認）
+  2. 別ターミナルで `PID=$(pgrep -f "tsx.*src/index.ts" | head -1)` でPIDを取得（複数マッチする場合があるため `head -1` で絞り込む）
+  3. `kill -SIGINT $PID; sleep 0.1; kill -SIGINT $PID` で2回送信（`sleep 0.1` で1回目のシグナル処理を待つ）
+  4. 元のターミナルで出力を確認
 - **期待結果:** "Force exiting..." と表示され、プロセスが終了コード 1 で終了する
 - **確認ポイント:** "Server stopped. Bye!" が表示されない（クリーンアップ完了前に終了するため）
 
