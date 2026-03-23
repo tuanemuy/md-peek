@@ -12,12 +12,20 @@ const htmlFile = join(testDir, "test.html");
 function getFreePort(): Promise<number> {
   return new Promise((resolve, reject) => {
     const srv = createServer();
+    srv.on("error", reject);
     srv.listen(0, () => {
       const addr = srv.address() as AddressInfo;
       srv.close((err) => (err ? reject(err) : resolve(addr.port)));
     });
   });
 }
+
+const baseConfig = {
+  targetPath: htmlFile,
+  mode: "file" as const,
+  hostname: "localhost",
+  contentType: "html" as const,
+};
 
 beforeAll(() => {
   mkdirSync(testDir, { recursive: true });
@@ -38,13 +46,7 @@ describe("startServer / shutdown lifecycle", () => {
 
   it("startServer starts server and responds to HTTP requests", async () => {
     const port = await getFreePort();
-    server = await startServer({
-      targetPath: htmlFile,
-      mode: "file",
-      port,
-      hostname: "localhost",
-      contentType: "html",
-    });
+    server = await startServer({ ...baseConfig, port });
 
     const res = await fetch(`http://localhost:${port}/`);
     expect(res.status).toBe(200);
@@ -52,13 +54,7 @@ describe("startServer / shutdown lifecycle", () => {
 
   it("shutdown resolves without error", async () => {
     const port = await getFreePort();
-    server = await startServer({
-      targetPath: htmlFile,
-      mode: "file",
-      port,
-      hostname: "localhost",
-      contentType: "html",
-    });
+    server = await startServer({ ...baseConfig, port });
 
     await expect(server.shutdown()).resolves.toBeUndefined();
     server = undefined;
@@ -66,13 +62,7 @@ describe("startServer / shutdown lifecycle", () => {
 
   it("server does not accept connections after shutdown", async () => {
     const port = await getFreePort();
-    server = await startServer({
-      targetPath: htmlFile,
-      mode: "file",
-      port,
-      hostname: "localhost",
-      contentType: "html",
-    });
+    server = await startServer({ ...baseConfig, port });
 
     await server.shutdown();
     server = undefined;
@@ -82,13 +72,7 @@ describe("startServer / shutdown lifecycle", () => {
 
   it("calling shutdown twice rejects on the second call", async () => {
     const port = await getFreePort();
-    server = await startServer({
-      targetPath: htmlFile,
-      mode: "file",
-      port,
-      hostname: "localhost",
-      contentType: "html",
-    });
+    server = await startServer({ ...baseConfig, port });
 
     await server.shutdown();
     await expect(server.shutdown()).rejects.toThrow();
