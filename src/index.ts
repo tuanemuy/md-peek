@@ -170,7 +170,9 @@ $ peek README.md --css ./custom.css --no-open`,
 
     let shuttingDown = false;
     const shutdown = async () => {
-      if (shuttingDown) return;
+      if (shuttingDown) {
+        process.exit(1);
+      }
       shuttingDown = true;
       console.log();
       intro(pc.bgYellow(pc.black(" Shutting down... ")));
