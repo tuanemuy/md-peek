@@ -1,3 +1,21 @@
+# [1.7.0](https://github.com/tuanemuy/peek/compare/v1.6.6...v1.7.0) (2026-03-24)
+
+
+### Bug Fixes
+
+* add error handling to shutdown() and lifecycle tests ([5955323](https://github.com/tuanemuy/peek/commit/5955323ca093f93526cb45df1b4d01b700ebe1e8)), closes [#63](https://github.com/tuanemuy/peek/issues/63)
+* add idempotency guard to ServerInstance.shutdown() ([c55516d](https://github.com/tuanemuy/peek/commit/c55516d60724a1b97931763bde100b7ee931da05)), closes [#67](https://github.com/tuanemuy/peek/issues/67)
+* add user feedback message before force exit ([8d723f3](https://github.com/tuanemuy/peek/commit/8d723f3c6fd60989da0a2af86d0c92f5c7b0dcc7)), closes [#68](https://github.com/tuanemuy/peek/issues/68)
+* ensure Ctrl+C exits cleanly when SSE connections are active ([78182fa](https://github.com/tuanemuy/peek/commit/78182fac216dc0a0c5da746678f7b91d1d9d7efe)), closes [#61](https://github.com/tuanemuy/peek/issues/61)
+* force exit on second SIGINT/SIGTERM ([3709538](https://github.com/tuanemuy/peek/commit/3709538e69a5846373de0ef32b4d2a5b3b0f4ddd)), closes [#68](https://github.com/tuanemuy/peek/issues/68)
+* pass full error object to logger instead of error.message ([3749cae](https://github.com/tuanemuy/peek/commit/3749cae197aa6e94ec68d20e4becee08da7b17a2)), closes [#59](https://github.com/tuanemuy/peek/issues/59)
+* use project logger instead of console.warn in watcher ([53f0b84](https://github.com/tuanemuy/peek/commit/53f0b84c9562da671d973c958260290d39b46dec)), closes [#59](https://github.com/tuanemuy/peek/issues/59)
+
+
+### Features
+
+* add console.warn logging on file watcher errors ([03db35c](https://github.com/tuanemuy/peek/commit/03db35c2d08c9777c42523a199183a4f93fbb81a)), closes [#59](https://github.com/tuanemuy/peek/issues/59)
+
 ## [1.6.6](https://github.com/tuanemuy/peek/compare/v1.6.5...v1.6.6) (2026-03-21)
 
 

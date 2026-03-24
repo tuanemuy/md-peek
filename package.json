@@ -1,6 +1,6 @@
 {
   "name": "@makuja/peek",
-  "version": "1.6.6",
+  "version": "1.7.0",
   "description": "Markdown and HTML preview CLI with live reload",
   "type": "module",
   "bin": {
