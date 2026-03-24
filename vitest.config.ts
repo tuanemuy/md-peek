@@ -35,5 +35,17 @@ export default defineConfig({
     exclude: ["**/node_modules/**", "**/.direnv/**"],
     testTimeout: 30000,
     hookTimeout: 30000,
+    coverage: {
+      provider: "v8",
+      exclude: [
+        "**/node_modules/**",
+        "**/.direnv/**",
+        "**/dist/**",
+        "**/scripts/**",
+        "**/*.config.*",
+        "**/*.test.*",
+        "**/*.spec.*",
+      ],
+    },
   },
 });
